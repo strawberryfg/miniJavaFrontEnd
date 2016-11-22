@@ -7,6 +7,8 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.gui.TreeViewer;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
+
 
 public class Test {
     public static void main(String[] args) {
@@ -20,6 +22,7 @@ public class Test {
         TokenStream tokenStream = new CommonTokenStream(lexer);
         miniJavaParser parser = new miniJavaParser(tokenStream);
         ParseTree tree = parser.goal();
+
         JFrame frame = new JFrame("Abstract Syntax Tree GUI(By Qingfu Wan)");
         JPanel panel = new JPanel();
         TreeViewer viewr = new TreeViewer(Arrays.asList(
