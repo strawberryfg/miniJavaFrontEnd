@@ -15,12 +15,14 @@ public class Test {
         //prepare token stream
         CharStream stream = new ANTLRInputStream("public class Test {\n" +
                 "   public static void main(String[] args) {\n" +
-                "      int a = 4;\n" +
+                "      int a = ;\n" +
                 "   }\n" +
                 "}");
         miniJavaLexer lexer  = new miniJavaLexer(stream);
         TokenStream tokenStream = new CommonTokenStream(lexer);
         miniJavaParser parser = new miniJavaParser(tokenStream);
+        parser.removeErrorListeners();
+        parser.addErrorListener(new test_listener.VerboseListener());
         ParseTree tree = parser.goal();
 
         JFrame frame = new JFrame("Abstract Syntax Tree GUI(By Qingfu Wan)");
