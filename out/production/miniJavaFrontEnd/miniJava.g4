@@ -27,12 +27,12 @@ type
 	|identifier ;
 
 statement
-    : '{' ( statement )* '}'
-	|'if' '(' extendexp ')' statement 'else' statement
-	|'while' '(' extendexp ')' statement
-	|'System.out.println' '(' extendexp ')' ';'
-	|identifier '=' extendexp ';'
-	|identifier '[' extendexp ']' '=' extendexp ';' 
+    : '{' ( statement )* '}'                                       #BracesOfStatement
+	|'if' '(' extendexp ')' statement 'else' statement             #Ifelse
+	|'while' '(' extendexp ')' statement                           #While
+	|'System.out.println' '(' extendexp ')' ';'                    #Println	
+	|identifier '=' extendexp ';'                                  #Assign
+	|identifier '[' extendexp ']' '=' extendexp ';'                #ArrayValueAssign
     ;
 
 extendexp
@@ -42,23 +42,23 @@ extendexp
     ;
 
 expression
-    : expression ('&&'|'<') expression   
-        | expression ('*'|'/') expression
-        | expression ('+'|'-') expression
-        | expression '[' expression ']'
-        | expression '.' 'length'
-        | expression '.' identifier '(' ( expression ( ',' expression )* )? ')'
-        | 'true'
-        | 'false'
-        | identifier
-        | 'this'
-        | 'new' 'int' '[' expression ']'
-        | 'new' identifier '(' ')'
-        | '!' expression
-        | '(' expression ')'
-        | INT
-        | STR        
-        | '(' expression ')'
+    :     expression '&&' expression                                                #And
+	    | expression '<' expression                                                 #Lessthan
+        | expression ('*'|'/') expression                                           #MulDivide
+        | expression ('+'|'-') expression                                           #AddSub
+        | expression '[' expression ']'                                             #GetArrayValue
+        | expression '.' 'length'                                                   #GetLength
+        | expression '.' identifier '(' ( expression ( ',' expression )* )? ')'     #CallFunction
+        | 'true'                                                                    #BoolTrue
+        | 'false'                                                                   #BoolFalse
+        | identifier                                                                #VarOfExpression
+        | 'this'                                                                    #This
+        | 'new' 'int' '[' expression ']'                                            #NewIntArray
+        | 'new' identifier '(' ')'                                                  #NewClass
+        | '!' expression                                                            #Negative
+        | '(' expression ')'                                                        #Bracketpair
+        | INT                                                                       #IntValueOfExpression
+        | STR                                                                       #StringValueOfExpression        
         ;
 
 identifier

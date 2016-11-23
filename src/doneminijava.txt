@@ -57,7 +57,7 @@ expression
         | 'new' identifier '(' ')'                                                  #NewClass
         | '!' expression                                                            #Negative
         | '(' expression ')'                                                        #Bracketpair
-        | INT                                                                       #IntValueOfExpression
+        
         | STR                                                                       #StringValueOfExpression        
         ;
 

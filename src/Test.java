@@ -40,7 +40,7 @@ public class Test {
                 "    ntb = root.Insert(4) ;\n" +
                 "    ntb = root.Insert(12) ;\n" +
                 "    ntb = root.Insert(20) ;\n" +
-                "    ntb = root.Insert(28) ;\n" +
+                "    ntb = root.Insert(28 && 5) ;\n" +
                 "    ntb = root.Insert(14) ;\n" +
                 "    ntb = root.Print();\n" +
                 "    System.out.println(root.Search(24));\n" +
@@ -359,6 +359,13 @@ public class Test {
             //parser.addErrorListener(new test_listener.VerboseListener());
             parser.addErrorListener(new test_listener2.UnderlineListener());
             ParseTree tree = parser.goal();
+
+            ParseTreeWalker walker = new ParseTreeWalker();
+            PhaseDefine def = new PhaseDefine();
+            walker.walk(def, tree);
+            // create next phase and feed symbol table info from def to ref phase
+            PhaseCheck ref = new PhaseCheck(def.globals, def.scopes);
+            walker.walk(ref, tree);
 
             JFrame frame = new JFrame("Abstract Syntax Tree GUI(By Qingfu Wan)");
             JPanel panel = new JPanel();
