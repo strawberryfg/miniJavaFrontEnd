@@ -41,52 +41,11 @@ public class basic {
             "\t\n" +
             "    }\n" +
             "}\n" +
-            "\n" +
-            "\n" +
-            "// This class invokes the methods to create a tree,\n" +
-            "// insert, delete and serach for  elements on it\n" +
-            "class BT {\n" +
-            "\n" +
-            "    public int Start(){\n" +
-            "    Tree root ;\n" +
-            "    boolean ntb ;\n" +
-            "    int nti ;\n" +
-            "\n" +
-            "    root = new Tree();\n" +
-            "    ntb = root.Init(16);\n" +
-            "    ntb = root.Print();\n" +
-            "    System.out.println(100000000 + \"s\");\n" +
-            "    ntb = root.Insert(8) ;\n" +
-            "    ntb = root.Print();\n" +
-            "    ntb = root.Insert(24 + ( 3 * 5)) ;\n" +
-            "    ntb = root.Insert(4 + 3 * 5) ;\n" +
-            "    ntb = root.Insert(12) ;\n" +
-            "    ntb = root.Insert(20) ;\n" +
-            "    ntb = root.Insert(28) ;\n" +
-            "    ntb = root.Insert(14) ;\n" +
-            "    ntb = root.Print();\n" +
-            "    System.out.println(root.Search(24));\n" +
-            "    System.out.println(root.Search(12));\n" +
-            "    System.out.println(root.Search(16));\n" +
-            "    System.out.println(root.Search(50));\n" +
-            "    System.out.println(root.Search(12));\n" +
-            "    ntb = root.Delete(12);\n" +
-            "    ntb = root.Print();\n" +
-            "    System.out.println(root.Search(12));\n" +
-            "\n" +
-            "    return 0 ;\n" +
-            "    }\n" +
-            "\n" +
-            "}\n" +
-            "\n" +
-            "class f extends B\n" +
-            "{\n" +
-            "}\n" +
-            "\n" +
             "class Tree{\n" +
             "    Tree left ;\n" +
             "    Tree right;\n" +
             "    int key ;\n" +
+            "\tint Tree;\n" +
             "    boolean has_left ;\n" +
             "    boolean has_right ;\n" +
             "    Tree my_null ;\n" +
@@ -374,5 +333,48 @@ public class basic {
             "    }\n" +
             "\n" +
             "}\n" +
-            "   \n";
+            "   \n" +
+            "\n" +
+            "\n" +
+            "// This class invokes the methods to create a tree,\n" +
+            "// insert, delete and serach for  elements on it\n" +
+            "class BT {\n" +
+            "\n" +
+            "    public int Start(){\n" +
+            "    SegmentTree hello;\n" +
+            "    Tree root ;\n" +
+            "    boolean ntb ;\n" +
+            "    int nti ;\n" +
+            "\n" +
+            "    root = new Tree();\n" +
+            "    ntb = root.Init(16);\n" +
+            "    ntb = root.Print();\n" +
+            "    System.out.println(100000000 + \"s\");\n" +
+            "    ntb = root.Insert(8) ;\n" +
+            "    ntb = root.Print();\n" +
+            "    ntb = root.Insert(24 + ( 3 * 5)) ;\n" +
+            "    ntb = root.Insert(4 + 3 * 5) ;\n" +
+            "    ntb = root.Insert(12) ;\n" +
+            "    ntb = root.Insert(20) ;\n" +
+            "    ntb = root.Insert(28) ;\n" +
+            "    ntb = root.Insert(14) ;\n" +
+            "    ntb = root.Print();\n" +
+            "    System.out.println(root.Search(24));\n" +
+            "    System.out.println(root.Search(12));\n" +
+            "    System.out.println(root.Search(16));\n" +
+            "    System.out.println(root.Search(50));\n" +
+            "    System.out.println(root.Search(12));\n" +
+            "    ntb = root.Delete(12);\n" +
+            "    ntb = root.Print();\n" +
+            "    System.out.println(root.Search(12));\n" +
+            "\n" +
+            "    return 0 ;\n" +
+            "    }\n" +
+            "\n" +
+            "}\n" +
+            "\n" +
+            "class f extends B\n" +
+            "{\n" +
+            "}\n" +
+            "\n";
 }
