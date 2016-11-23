@@ -27,12 +27,12 @@ type
 	|identifier ;
 
 statement
-    : '{' ( statement )* '}'
-	|'if' '(' extendexp ')' statement 'else' statement
-	|'while' '(' extendexp ')' statement
-	|'System.out.println' '(' extendexp ')' ';'
-	|identifier '=' extendexp ';'
-	|identifier '[' extendexp ']' '=' extendexp ';' 
+    : '{' ( statement )* '}'                                       #braces
+	|'if' '(' extendexp ')' statement 'else' statement             #ifelse
+	|'while' '(' extendexp ')' statement                           #while
+	|'System.out.println' '(' extendexp ')' ';'                    #println	
+	|identifier '=' extendexp ';'                                  #assign
+	|identifier '[' extendexp ']' '=' extendexp ';'                #index
     ;
 
 extendexp
