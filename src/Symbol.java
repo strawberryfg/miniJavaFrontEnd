@@ -21,7 +21,7 @@ public class Symbol
 
     public String toString()
     {
-        if ( type!=Type.tVoid )
+        if ( type!=Type.jVoid )
             return '<'+getName()+":"+type+'>';
         return getName();
     }

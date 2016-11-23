@@ -10,21 +10,24 @@ mainClass
 classDeclaration
     : 'class' identifier 
     ( 'extends' identifier )? 
-    '{' ( varDeclaration )* ( methodDeclaration )* '}' ;
+    '{' ( varDeclaration )* ( methodDeclaration )* '}'             #InsideClass
+	;           
 
 varDeclaration
-    : type identifier ';'  
+    : type identifier ';'                                          #DeclareVariable
     ;
 
 methodDeclaration
     : 'public' type identifier 
-    '(' ( type identifier ( ',' type identifier )* )? ')' '{' ( varDeclaration )* ( statement )* 'return' extendexp ';' '}' ;
+    '(' ( type identifier ( ',' type identifier )* )? ')' '{' ( varDeclaration )* ( statement )* 'return' extendexp ';' '}'   #Method
+	;
 
 type
-    : 'int' '['']'
-    |'boolean'
-	|'int'
-	|identifier ;
+    : 'int' '['']'                                                 #IntegerArray
+    |'boolean'                                                     #Boolean
+	|'int'                                                         #Integer
+	|identifier                                                    #Instance
+	;                                                  
 
 statement
     : '{' ( statement )* '}'                                       #BracesOfStatement
@@ -62,9 +65,9 @@ expression
         ;
 
 identifier
-    :ID
-    |WRONG {notifyErrorListeners("Wrong ID");}
-    ;
+    :ID                                                                             #Variable
+    |WRONG {notifyErrorListeners("Wrong ID");}                                      #WrongID   
+    ;                                                                              
 
 
 ID:[a-zA-Z][a-zA-Z0-9_]*;

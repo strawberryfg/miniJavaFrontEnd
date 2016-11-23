@@ -229,6 +229,17 @@ public class miniJavaParser extends Parser {
 	}
 
 	public static class ClassDeclarationContext extends ParserRuleContext {
+		public ClassDeclarationContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_classDeclaration; }
+	 
+		public ClassDeclarationContext() { }
+		public void copyFrom(ClassDeclarationContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	public static class InsideClassContext extends ClassDeclarationContext {
 		public List<IdentifierContext> identifier() {
 			return getRuleContexts(IdentifierContext.class);
 		}
@@ -247,17 +258,14 @@ public class miniJavaParser extends Parser {
 		public MethodDeclarationContext methodDeclaration(int i) {
 			return getRuleContext(MethodDeclarationContext.class,i);
 		}
-		public ClassDeclarationContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_classDeclaration; }
+		public InsideClassContext(ClassDeclarationContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof miniJavaListener ) ((miniJavaListener)listener).enterClassDeclaration(this);
+			if ( listener instanceof miniJavaListener ) ((miniJavaListener)listener).enterInsideClass(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof miniJavaListener ) ((miniJavaListener)listener).exitClassDeclaration(this);
+			if ( listener instanceof miniJavaListener ) ((miniJavaListener)listener).exitInsideClass(this);
 		}
 	}
 
@@ -266,6 +274,7 @@ public class miniJavaParser extends Parser {
 		enterRule(_localctx, 4, RULE_classDeclaration);
 		int _la;
 		try {
+			_localctx = new InsideClassContext(_localctx);
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(44);
@@ -329,23 +338,31 @@ public class miniJavaParser extends Parser {
 	}
 
 	public static class VarDeclarationContext extends ParserRuleContext {
+		public VarDeclarationContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_varDeclaration; }
+	 
+		public VarDeclarationContext() { }
+		public void copyFrom(VarDeclarationContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	public static class DeclareVariableContext extends VarDeclarationContext {
 		public TypeContext type() {
 			return getRuleContext(TypeContext.class,0);
 		}
 		public IdentifierContext identifier() {
 			return getRuleContext(IdentifierContext.class,0);
 		}
-		public VarDeclarationContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_varDeclaration; }
+		public DeclareVariableContext(VarDeclarationContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof miniJavaListener ) ((miniJavaListener)listener).enterVarDeclaration(this);
+			if ( listener instanceof miniJavaListener ) ((miniJavaListener)listener).enterDeclareVariable(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof miniJavaListener ) ((miniJavaListener)listener).exitVarDeclaration(this);
+			if ( listener instanceof miniJavaListener ) ((miniJavaListener)listener).exitDeclareVariable(this);
 		}
 	}
 
@@ -353,6 +370,7 @@ public class miniJavaParser extends Parser {
 		VarDeclarationContext _localctx = new VarDeclarationContext(_ctx, getState());
 		enterRule(_localctx, 6, RULE_varDeclaration);
 		try {
+			_localctx = new DeclareVariableContext(_localctx);
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(65);
@@ -375,6 +393,17 @@ public class miniJavaParser extends Parser {
 	}
 
 	public static class MethodDeclarationContext extends ParserRuleContext {
+		public MethodDeclarationContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_methodDeclaration; }
+	 
+		public MethodDeclarationContext() { }
+		public void copyFrom(MethodDeclarationContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	public static class MethodContext extends MethodDeclarationContext {
 		public List<TypeContext> type() {
 			return getRuleContexts(TypeContext.class);
 		}
@@ -402,17 +431,14 @@ public class miniJavaParser extends Parser {
 		public StatementContext statement(int i) {
 			return getRuleContext(StatementContext.class,i);
 		}
-		public MethodDeclarationContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_methodDeclaration; }
+		public MethodContext(MethodDeclarationContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof miniJavaListener ) ((miniJavaListener)listener).enterMethodDeclaration(this);
+			if ( listener instanceof miniJavaListener ) ((miniJavaListener)listener).enterMethod(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof miniJavaListener ) ((miniJavaListener)listener).exitMethodDeclaration(this);
+			if ( listener instanceof miniJavaListener ) ((miniJavaListener)listener).exitMethod(this);
 		}
 	}
 
@@ -422,6 +448,7 @@ public class miniJavaParser extends Parser {
 		int _la;
 		try {
 			int _alt;
+			_localctx = new MethodContext(_localctx);
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(69);
@@ -517,20 +544,61 @@ public class miniJavaParser extends Parser {
 	}
 
 	public static class TypeContext extends ParserRuleContext {
-		public IdentifierContext identifier() {
-			return getRuleContext(IdentifierContext.class,0);
-		}
 		public TypeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_type; }
+	 
+		public TypeContext() { }
+		public void copyFrom(TypeContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	public static class IntegerContext extends TypeContext {
+		public IntegerContext(TypeContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof miniJavaListener ) ((miniJavaListener)listener).enterType(this);
+			if ( listener instanceof miniJavaListener ) ((miniJavaListener)listener).enterInteger(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof miniJavaListener ) ((miniJavaListener)listener).exitType(this);
+			if ( listener instanceof miniJavaListener ) ((miniJavaListener)listener).exitInteger(this);
+		}
+	}
+	public static class InstanceContext extends TypeContext {
+		public IdentifierContext identifier() {
+			return getRuleContext(IdentifierContext.class,0);
+		}
+		public InstanceContext(TypeContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof miniJavaListener ) ((miniJavaListener)listener).enterInstance(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof miniJavaListener ) ((miniJavaListener)listener).exitInstance(this);
+		}
+	}
+	public static class BooleanContext extends TypeContext {
+		public BooleanContext(TypeContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof miniJavaListener ) ((miniJavaListener)listener).enterBoolean(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof miniJavaListener ) ((miniJavaListener)listener).exitBoolean(this);
+		}
+	}
+	public static class IntegerArrayContext extends TypeContext {
+		public IntegerArrayContext(TypeContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof miniJavaListener ) ((miniJavaListener)listener).enterIntegerArray(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof miniJavaListener ) ((miniJavaListener)listener).exitIntegerArray(this);
 		}
 	}
 
@@ -542,6 +610,7 @@ public class miniJavaParser extends Parser {
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,8,_ctx) ) {
 			case 1:
+				_localctx = new IntegerArrayContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(105);
@@ -553,6 +622,7 @@ public class miniJavaParser extends Parser {
 				}
 				break;
 			case 2:
+				_localctx = new BooleanContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(108);
@@ -560,6 +630,7 @@ public class miniJavaParser extends Parser {
 				}
 				break;
 			case 3:
+				_localctx = new IntegerContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
 				setState(109);
@@ -567,6 +638,7 @@ public class miniJavaParser extends Parser {
 				}
 				break;
 			case 4:
+				_localctx = new InstanceContext(_localctx);
 				enterOuterAlt(_localctx, 4);
 				{
 				setState(110);
@@ -1446,19 +1518,38 @@ public class miniJavaParser extends Parser {
 	}
 
 	public static class IdentifierContext extends ParserRuleContext {
-		public TerminalNode ID() { return getToken(miniJavaParser.ID, 0); }
-		public TerminalNode WRONG() { return getToken(miniJavaParser.WRONG, 0); }
 		public IdentifierContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_identifier; }
+	 
+		public IdentifierContext() { }
+		public void copyFrom(IdentifierContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	public static class VariableContext extends IdentifierContext {
+		public TerminalNode ID() { return getToken(miniJavaParser.ID, 0); }
+		public VariableContext(IdentifierContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof miniJavaListener ) ((miniJavaListener)listener).enterIdentifier(this);
+			if ( listener instanceof miniJavaListener ) ((miniJavaListener)listener).enterVariable(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof miniJavaListener ) ((miniJavaListener)listener).exitIdentifier(this);
+			if ( listener instanceof miniJavaListener ) ((miniJavaListener)listener).exitVariable(this);
+		}
+	}
+	public static class WrongIDContext extends IdentifierContext {
+		public TerminalNode WRONG() { return getToken(miniJavaParser.WRONG, 0); }
+		public WrongIDContext(IdentifierContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof miniJavaListener ) ((miniJavaListener)listener).enterWrongID(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof miniJavaListener ) ((miniJavaListener)listener).exitWrongID(this);
 		}
 	}
 
@@ -1469,6 +1560,7 @@ public class miniJavaParser extends Parser {
 			setState(237);
 			switch (_input.LA(1)) {
 			case ID:
+				_localctx = new VariableContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(234);
@@ -1476,6 +1568,7 @@ public class miniJavaParser extends Parser {
 				}
 				break;
 			case WRONG:
+				_localctx = new WrongIDContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(235);

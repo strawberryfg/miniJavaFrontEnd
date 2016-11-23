@@ -1,12 +1,14 @@
 
 
 public enum Type{
-    tInt,
-    tString,
-    tVoid,
+    jInt,
+    jString,
+    jVoid,
+    jBool,
     //tUDT,
-    tFunc,
-    tRecord,
-    tArray,
-    tNil
+    jFunc,
+    jRecord,
+    jArray,
+    jClass,
+    jNil
 }
