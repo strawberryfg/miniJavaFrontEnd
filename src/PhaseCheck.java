@@ -10,6 +10,7 @@ public class PhaseCheck extends miniJavaBaseListener
     Scope currentScope;
 
     ParseTreeProperty<Type> typeprop = new ParseTreeProperty<Type>();
+    int now_scope = 0;
     public class pair
     {
          String var_name;
@@ -25,6 +26,7 @@ public class PhaseCheck extends miniJavaBaseListener
          }
     }
     HashMap<String, Type> currentvarSet = new HashMap<String, Type>();   //each variable has an unique
+    HashMap<String, Integer> vardeclareTime = new HashMap<String, Integer>();
     HashSet<String> classSet = new HashSet<String>();
 
 
@@ -54,8 +56,10 @@ public class PhaseCheck extends miniJavaBaseListener
         return Type.jNil;   // not a class or any type
     }
 
+
     public void enterMethod(miniJavaParser.MethodContext ctx)   //public method inside the class
     {
+        now_scope++;
         for (int i = 0; i < ctx.identifier().size(); i++)
         {
             int identifier_start = ctx.identifier(i).start.getStartIndex();
@@ -73,14 +77,54 @@ public class PhaseCheck extends miniJavaBaseListener
             else
             {
                 Type t_find = findType(type_name);
-                if (t_find != Type.jNil) currentvarSet.put(identifer_name, t_find);
+                if (t_find != Type.jNil) // int boolean or class
+                {
+                    currentvarSet.put(identifer_name, t_find);
+                    vardeclareTime.put(identifer_name, now_scope);    //add the argument of the method to the var set
+                }
             }
         }
     }
 
     public void exitMethod(miniJavaParser.MethodContext ctx)  //will step out of the method
     {
+        for (int i = 0; i < ctx.identifier().size(); i++)
+        {
+            int identifier_start = ctx.identifier(i).start.getStartIndex();
+            int identifier_stop = ctx.identifier(i).start.getStopIndex();
+            String identifer_name = ctx.start.getInputStream().toString().substring(identifier_start, identifier_stop + 1);
+            int type_start = ctx.type(i).start.getStartIndex();
+            int type_stop = ctx.type(i).start.getStopIndex();
+            String type_name = ctx.start.getInputStream().toString().substring(type_start, type_stop + 1);
+            if (currentvarSet.get(identifer_name) != null)
+            {
+                if (vardeclareTime.get(identifer_name) == now_scope)  //it is declared in this scope
+                {
+                    Type t_find = findType(type_name);
+                    if (t_find != Type.jNil)
+                    {
+                        if (currentvarSet.get(identifer_name)  != null) currentvarSet.remove(identifer_name);   //remove it from the method
+                    }
+                }//otherwise it should not be removed
+            }
+        }
 
+        for (int i = 0; i < ctx.varDeclaration().size(); i++)
+        {
+            String identifer_name = ctx.varDeclaration(i).getChild(1).getText();
+            String type_name = ctx.varDeclaration(i).getChild(0).getText();
+            if (currentvarSet.get(identifer_name) != null)
+            {
+                if (vardeclareTime.get(identifer_name) == now_scope)  //it is declared in this scope
+                {
+                    Type t_find = findType(type_name);
+                    if (t_find != Type.jNil)
+                    {
+                        if (currentvarSet.get(identifer_name)  != null) currentvarSet.remove(identifer_name);   //remove it from the method
+                    }
+                }//otherwise it should not be removed
+            }
+        }
     }
 
 
@@ -102,6 +146,7 @@ public class PhaseCheck extends miniJavaBaseListener
 
     public void enterInsideClass(miniJavaParser.InsideClassContext ctx)
     {
+        now_scope++;
         if (ctx.identifier(1) != null)   // extends     the class should exist already
         {
             int start = ctx.identifier(1).start.getStartIndex();
@@ -157,6 +202,7 @@ public class PhaseCheck extends miniJavaBaseListener
         else
         {
             currentvarSet.put(var_name, typeprop.get(ctx.type()));
+            vardeclareTime.put(var_name, now_scope);
         }
     }
 
