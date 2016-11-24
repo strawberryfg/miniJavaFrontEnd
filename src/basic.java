@@ -198,7 +198,85 @@ public class basic {
             "    }\n" +
             "\n" +
             "\n" +
-            "    // Delete an element from the tree\n" +
+            "\n" +
+            "\t// Copy the child key to the parent until a leaf is\n" +
+            "    // found and remove the leaf. This is done with the\n" +
+            "    // right subtree\n" +
+            "    public boolean RemoveRight(Tree p_node, Tree c_node){\n" +
+            "    boolean ntb ;\n" +
+            "\n" +
+            "    while (c_node.GetHas_Right()){\n" +
+            "        //auxtree01 = c_node.GetRight() ;\n" +
+            "        //auxint02 = auxtree01.GetKey();\n" +
+            "        //ntb = c_node.SetKey(auxint02);\n" +
+            "        ntb = c_node.SetKey((c_node.GetRight()).GetKey());\n" +
+            "        p_node = c_node ;\n" +
+            "        c_node = c_node.GetRight() ;\n" +
+            "    }\n" +
+            "    ntb = p_node.SetRight(my_null);\n" +
+            "    ntb = p_node.SetHas_Right(false);\n" +
+            "    return true ;\n" +
+            "    }\n" +
+            "\n" +
+            "\n" +
+            "    // Copy the child key to the parent until a leaf is\n" +
+            "    // found and remove the leaf. This is done with the\n" +
+            "    // left subtree\n" +
+            "    public boolean RemoveLeft(Tree p_node, Tree c_node){\n" +
+            "    boolean ntb ;\n" +
+            "\n" +
+            "    while (c_node.GetHas_Left()){\n" +
+            "        //auxtree01 = c_node.GetLeft() ;\n" +
+            "        //auxint02 = auxtree01.GetKey();\n" +
+            "        //ntb = c_node.SetKey(auxint02);\n" +
+            "        ntb = c_node.SetKey((c_node.GetLeft()).GetKey());\n" +
+            "        p_node = c_node ;\n" +
+            "        c_node = c_node.GetLeft() ;\n" +
+            "    }\n" +
+            "    ntb = p_node.SetLeft(my_null);\n" +
+            "    ntb = p_node.SetHas_Left(false);\n" +
+            "    return true ;\n" +
+            "    }\n" +
+            "\n" +
+            "\t\n" +
+            "\n" +
+            "    // Check if the element to be removed will use the\n" +
+            "    // righ or left subtree if one exists\n" +
+            "    public boolean Remove(Tree p_node, Tree c_node){\n" +
+            "    boolean ntb ;\n" +
+            "\tboolean t_remove;\n" +
+            "    int auxkey1 ;\n" +
+            "    int auxkey2 ;\n" +
+            "    T ff;\n" +
+            "\tTree t_tree;\n" +
+            "    if (c_node.GetHas_Left()) \n" +
+            "        ntb = this.RemoveLeft(p_node,c_node) ;\n" +
+            "    else \n" +
+            "        if (c_node.GetHas_Right())\n" +
+            "        ntb = this.RemoveRight(p_node,c_node) ;\t\t\n" +
+            "        else {\n" +
+            "\t\tntb = ff.Remove(p_node);\n" +
+            "\t\tt_remove = t_tree.Remove_rewrite(p_node);\n" +
+            "\t\tt_remove = t_tree.Remove(p_node);\n" +
+            "        auxkey1 = c_node.GetKey();\n" +
+            "        //auxtree01 = p_node.GetLeft() ;\n" +
+            "        //auxkey2 = auxtree01.GetKey() ;\n" +
+            "        auxkey2 = (p_node.GetLeft()).GetKey() ;\n" +
+            "\t\t\n" +
+            "        if (this.Compare(auxkey1,auxkey2)) {\n" +
+            "            ntb = p_node.SetLeft(my_null);\n" +
+            "            ntb = p_node.SetHas_Left(false);\n" +
+            "        }\n" +
+            "        else {\n" +
+            "            ntb = p_node.SetRight(my_null);\n" +
+            "            ntb = p_node.SetHas_Right(false);\n" +
+            "        }\n" +
+            "        }\n" +
+            "    return true ;\n" +
+            "    }\n" +
+            "\n" +
+            "\n" +
+            "\t    // Delete an element from the tree\n" +
             "    public boolean Delete(int v_key){\n" +
             "    Tree current_node ;\n" +
             "    Tree parent_node ;\n" +
@@ -248,76 +326,7 @@ public class basic {
             "    return found ;\n" +
             "    }\n" +
             "\n" +
-            "\n" +
-            "    // Check if the element to be removed will use the\n" +
-            "    // righ or left subtree if one exists\n" +
-            "    public boolean Remove(Tree p_node, Tree c_node){\n" +
-            "    boolean ntb ;\n" +
-            "    int auxkey1 ;\n" +
-            "    int auxkey2 ;\n" +
             "    \n" +
-            "    if (c_node.GetHas_Left()) \n" +
-            "        ntb = this.RemoveLeft(p_node,c_node) ;\n" +
-            "    else \n" +
-            "        if (c_node.GetHas_Right())\n" +
-            "        ntb = this.RemoveRight(p_node,c_node) ;\n" +
-            "        else {\n" +
-            "        auxkey1 = c_node.GetKey();\n" +
-            "        //auxtree01 = p_node.GetLeft() ;\n" +
-            "        //auxkey2 = auxtree01.GetKey() ;\n" +
-            "        auxkey2 = (p_node.GetLeft()).GetKey() ;\n" +
-            "        if (this.Compare(auxkey1,auxkey2)) {\n" +
-            "            ntb = p_node.SetLeft(my_null);\n" +
-            "            ntb = p_node.SetHas_Left(false);\n" +
-            "        }\n" +
-            "        else {\n" +
-            "            ntb = p_node.SetRight(my_null);\n" +
-            "            ntb = p_node.SetHas_Right(false);\n" +
-            "        }\n" +
-            "        }\n" +
-            "    return true ;\n" +
-            "    }\n" +
-            "\n" +
-            "\n" +
-            "    // Copy the child key to the parent until a leaf is\n" +
-            "    // found and remove the leaf. This is done with the\n" +
-            "    // right subtree\n" +
-            "    public boolean RemoveRight(Tree p_node, Tree c_node){\n" +
-            "    boolean ntb ;\n" +
-            "\n" +
-            "    while (c_node.GetHas_Right()){\n" +
-            "        //auxtree01 = c_node.GetRight() ;\n" +
-            "        //auxint02 = auxtree01.GetKey();\n" +
-            "        //ntb = c_node.SetKey(auxint02);\n" +
-            "        ntb = c_node.SetKey((c_node.GetRight()).GetKey());\n" +
-            "        p_node = c_node ;\n" +
-            "        c_node = c_node.GetRight() ;\n" +
-            "    }\n" +
-            "    ntb = p_node.SetRight(my_null);\n" +
-            "    ntb = p_node.SetHas_Right(false);\n" +
-            "    return true ;\n" +
-            "    }\n" +
-            "\n" +
-            "\n" +
-            "    // Copy the child key to the parent until a leaf is\n" +
-            "    // found and remove the leaf. This is done with the\n" +
-            "    // left subtree\n" +
-            "    public boolean RemoveLeft(Tree p_node, Tree c_node){\n" +
-            "    boolean ntb ;\n" +
-            "\n" +
-            "    while (c_node.GetHas_Left()){\n" +
-            "        //auxtree01 = c_node.GetLeft() ;\n" +
-            "        //auxint02 = auxtree01.GetKey();\n" +
-            "        //ntb = c_node.SetKey(auxint02);\n" +
-            "        ntb = c_node.SetKey((c_node.GetLeft()).GetKey());\n" +
-            "        p_node = c_node ;\n" +
-            "        c_node = c_node.GetLeft() ;\n" +
-            "    }\n" +
-            "    ntb = p_node.SetLeft(my_null);\n" +
-            "    ntb = p_node.SetHas_Left(false);\n" +
-            "    return true ;\n" +
-            "    }\n" +
-            "\n" +
             "    // Search for an elemnt in the tree\n" +
             "    public int Search(int v_key){\n" +
             "    boolean cont ;\n" +

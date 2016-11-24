@@ -1,8 +1,11 @@
+import com.intellij.vcs.log.Hash;
 import com.sun.deploy.security.ValidationState;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 import java.util.*;
 import org.antlr.v4.runtime.Token;
 import java.util.HashMap;
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
 
 public class PhaseCheck extends miniJavaBaseListener
 {
@@ -31,7 +34,9 @@ public class PhaseCheck extends miniJavaBaseListener
     HashSet<String> classSet = new HashSet<String>();
     HashMap<String, Integer> classScope = new HashMap<String, Integer>();
     HashMap<String, String> classInstanceSet = new HashMap<String, String>();   // the set of instances of classes
-    HashMap<class_method_pair, HashMap<Integer, Type> > method_arguments = new HashMap<class_method_pair, HashMap<Integer, Type>>(); //integer stands for the index of the arguemnt list
+    Table<String, String, HashMap<Integer, Type>> method_arguments = HashBasedTable.create();
+
+    //HashMap<class_method_pair, HashMap<Integer, Type> > method_arguments = new HashMap<class_method_pair, HashMap<Integer, Type>>(); //integer stands for the index of the arguemnt list
     String current_class_name = "";   //the name of current class    this means it
 
     public PhaseCheck(GlobalScope globals, ParseTreeProperty<Scope> scopes)
@@ -171,7 +176,6 @@ public class PhaseCheck extends miniJavaBaseListener
     {
         now_scope++;
         HashMap<Integer, Type> t_hash = new HashMap<Integer, Type>();
-        class_method_pair t_pair = new class_method_pair(((miniJavaParser.InsideClassContext) ((miniJavaParser.MethodContext) ctx).parent).identifier(0).getText(), ctx.identifier(0).getText());
         //class name is the getText of identifier(0) of parent, and method name is simply ctx.identifier(0).getText()
         //e.g. <Tree, Init>  class Tree has Function Init
         boolean valid_method = true;
@@ -195,7 +199,7 @@ public class PhaseCheck extends miniJavaBaseListener
                 Type t_find = findType(type_name);
                 if (t_find != Type.jVoid) // int boolean or class
                 {
-                    if (t_find == Type.jClass) classInstanceSet.put(identifier_name, type_name)   //instance, class name
+                    if (t_find == Type.jClass) classInstanceSet.put(identifier_name, type_name);   //instance, class name
                     currentvarSet.put(identifier_name, t_find);
                     varScope.put(identifier_name, now_scope);    //add the argument of the method to the var set
                     t_hash.put(i, t_find);   //the i-th argument's type is t_find
@@ -208,7 +212,7 @@ public class PhaseCheck extends miniJavaBaseListener
         }
         if (valid_method)
         {
-            method_arguments.put(t_pair, t_hash);
+            method_arguments.put(((miniJavaParser.InsideClassContext) ((miniJavaParser.MethodContext) ctx).parent).identifier(0).getText(), ctx.identifier(0).getText(), t_hash);
         }
     }
 
@@ -502,9 +506,13 @@ public class PhaseCheck extends miniJavaBaseListener
         {
             boolean type_mismatch = false;
             String class_name = ctx.expression(0).getText();
-            if (class_name.equals("this")) class_name = current_class_name;    //because of this pointer
             String class_type = "";
-            if (classInstanceSet.containsKey(class_name)) class_type = classInstanceSet.get(class_name); // e.g. class Tree Tree f_tree  then f_tree is the class_name while Tree is the class type
+            if (class_name.equals("this"))
+            {
+                class_name = current_class_name;    //because of this pointer
+                class_type = current_class_name;   //it is
+            }
+            else if (classInstanceSet.containsKey(class_name)) class_type = classInstanceSet.get(class_name); // e.g. class Tree Tree f_tree  then f_tree is the class_name while Tree is the class type
             if (class_type.equals(""))
             {
                 basic.PrintError(ctx.getStart(), class_name + " is not a predefined class, and you cannot call its function" );
@@ -513,32 +521,40 @@ public class PhaseCheck extends miniJavaBaseListener
             }
             else
             {
-                class_method_pair call_function = new class_method_pair(class_type, ctx.identifier().getText()); // <Tree , Init>  Tree is the class name not instance name
-                HashMap<Integer, Type> function_args = method_arguments.get(call_function);    // call function 's arguments  (<name, type> pair)
-                for (int i = 1; i < ctx.expression().size(); i++) //0 is the Instance name   (use the function of class Instance)
+                HashMap<Integer, Type> function_args = method_arguments.get(class_type, ctx.identifier().getText());    // call function 's arguments  (<name, type> pair)
+                if (function_args == null)
                 {
-                    Type arg_i_type = typeprop.get(ctx.expression(i));   //get the type of i-th argument of the method function
-                    Type expected_type = Type.jVoid;
-                    if (function_args.containsKey(i)) expected_type = function_args.get(i);   // i = 1 is the first argument 's type
-                    if (expected_type == Type.jVoid)  //key i does not exist remember the pair is <index, type of argument>
-                    {
-                        basic.PrintError(ctx.getStart(), " The " + i + " -th argument of the function does not exist in the declaration, you cannot pass parameter!" );
-                    }
-                    else if (expected_type != arg_i_type)
-                    {
-                        basic.PrintError(ctx.getStart(), " The definition type of " + i + " -th argument of the function + " + class_name + " is " + expected_type + " while the real type is " + arg_i_type);
-                        type_mismatch = true; //flag
-                    }
-                }
-                if (type_mismatch)
-                {
+                    basic.PrintError(ctx.getStart(), " The method " + ctx.identifier().getText() + " is not a function of class " + class_type + "yet, you cannot pass parameter!" );
                     basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex()); //so that there is no redundancy
                     typeprop.put(ctx, Type.jVoid);
                 }
                 else
                 {
-                    Type return_type = function_args.get(0); // 0 is the class method (function)  's type
-                    typeprop.put(ctx, return_type);
+                    for (int i = 1; i < ctx.expression().size(); i++) //0 is the Instance name   (use the function of class Instance)
+                    {
+                        Type arg_i_type = typeprop.get(ctx.expression(i));   //get the type of i-th argument of the method function
+                        Type expected_type = Type.jVoid;
+                        if (function_args.containsKey(i)) expected_type = function_args.get(i);   // i = 1 is the first argument 's type
+                        if (expected_type == Type.jVoid)  //key i does not exist remember the pair is <index, type of argument>
+                        {
+                            basic.PrintError(ctx.getStart(), " The " + i + " -th argument of the function does not exist in the declaration, you cannot pass parameter!" );
+                        }
+                        else if (expected_type != arg_i_type)
+                        {
+                            basic.PrintError(ctx.getStart(), " The definition type of " + i + " -th argument of the function + " + class_name + " is " + expected_type + " while the real type is " + arg_i_type);
+                            type_mismatch = true; //flag
+                        }
+                    }
+                    if (type_mismatch)
+                    {
+                        basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex()); //so that there is no redundancy
+                        typeprop.put(ctx, Type.jVoid);
+                    }
+                    else
+                    {
+                        Type return_type = function_args.get(0); // 0 is the class method (function)  's type
+                        typeprop.put(ctx, return_type);
+                    }
                 }
             }
         }
