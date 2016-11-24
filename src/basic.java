@@ -48,10 +48,12 @@ public class basic {
             "    int key ;\n" +
             "\tint Tree;\n" +
             "\tint f;\n" +
+            "\tint zxl;\n" +
             "\tboolean b;\n" +
             "\t\n" +
             "    boolean has_left ;\n" +
             "    boolean has_right ;\n" +
+            "\t\n" +
             "    Tree my_null ;\n" +
             "\n" +
             "    // Initialize a node with a key value and no children\n" +
@@ -114,7 +116,15 @@ public class basic {
             "    }\n" +
             "\n" +
             "    public boolean GetHas_Left(){\n" +
-            "    return has_left ;\n" +
+            "\tif (zxl) \n" +
+            "\t{\t    \n" +
+            "\t    key = 5;\n" +
+            "\t}\n" +
+            "\telse\n" +
+            "\t{\n" +
+            "\t\tf = 4;\n" +
+            "\t}\n" +
+            "    return 3;\n" +
             "    }\n" +
             "\n" +
             "    public boolean SetHas_Left(boolean val){\n" +
@@ -387,7 +397,7 @@ public class basic {
             "    ntb = root.Print();\n" +
             "\twqf = new int [( (a + b * 5) / 3)];\n" +
             "\twqf[ntb] = \"s\";\n" +
-            "\twqf[3] = 'fds';\n" +
+            "\twqf[3] = \"fds\";\n" +
             "\twqf[2] = c;\n" +
             "    System.out.println(root.Search(24));\n" +
             "    System.out.println(root.Search(12));\n" +

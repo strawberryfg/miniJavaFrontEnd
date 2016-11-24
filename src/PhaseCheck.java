@@ -1,3 +1,4 @@
+import com.sun.deploy.security.ValidationState;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 import java.util.*;
 import org.antlr.v4.runtime.Token;
@@ -31,7 +32,7 @@ public class PhaseCheck extends miniJavaBaseListener
     HashMap<String, Type> currentvarSet = new HashMap<String, Type>();   //each variable has an unique
     HashMap<String, Integer> vardeclareTime = new HashMap<String, Integer>();
     HashSet<String> classSet = new HashSet<String>();
-
+    HashMap<String, Integer> classScope = new HashMap<String, Integer>();
 
     public PhaseCheck(GlobalScope globals, ParseTreeProperty<Scope> scopes)
     {
@@ -101,12 +102,17 @@ public class PhaseCheck extends miniJavaBaseListener
             String type_name = ctx.start.getInputStream().toString().substring(type_start, type_stop + 1);
             if (currentvarSet.get(identifer_name) != null)
             {
-                if (vardeclareTime.get(identifer_name) == now_scope)  //it is declared in this scope
+                if (vardeclareTime.get(identifer_name) == now_scope)  //it is declared in this scope   can ensure it's exactly this method
                 {
                     Type t_find = findType(type_name);
                     if (t_find != Type.jVoid)
                     {
-                        if (currentvarSet.get(identifer_name)  != null) currentvarSet.remove(identifer_name);   //remove it from the method
+                        if (currentvarSet.get(identifer_name)  != null)
+                        {
+                            currentvarSet.remove(identifer_name);   //remove it from the method
+                            vardeclareTime.remove(identifer_name);
+                        }
+
                     }
                 }//otherwise it should not be removed
             }
@@ -123,12 +129,46 @@ public class PhaseCheck extends miniJavaBaseListener
                     Type t_find = findType(type_name);
                     if (t_find != Type.jVoid)
                     {
-                        if (currentvarSet.get(identifer_name)  != null) currentvarSet.remove(identifer_name);   //remove it from the method
+                        if (currentvarSet.get(identifer_name)  != null)
+                        {
+                            currentvarSet.remove(identifer_name);   //remove it from the method
+                            vardeclareTime.remove(identifer_name);
+                        }
                     }
                 }//otherwise it should not be removed
             }
         }
+        //check return type
+        Type return_type = findType(ctx.type(0).getText());
+        Type calculate_type = typeprop.get(ctx.extendexp());
+        if (calculate_type != return_type)
+        {
+            basic.PrintError(ctx.getStart(), "The expected return type of function " + ctx.identifier(0).getText() + " should be " + return_type + " while the real return type is " + calculate_type);
+            basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
+        }
     }
+
+    public void exitIfelse(miniJavaParser.IfelseContext ctx)
+    {
+        Type condition_type = typeprop.get(ctx.extendexp());
+        if (condition_type != Type.jBool)
+        {
+            basic.PrintError(ctx.getStart(), "The if condition is not a boolean but a " + condition_type);
+            basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
+        }
+    }
+
+    public void exitWhile(miniJavaParser.WhileContext ctx)
+    {
+        Type condition_type = typeprop.get(ctx.extendexp());
+        if (condition_type != Type.jBool)
+        {
+            basic.PrintError(ctx.getStart(), "The while condition is not a boolean but a " + condition_type);
+            basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
+        }
+    }
+
+    public void exitPrintln(miniJavaParser.PrintlnContext)
 
     public void exitThis(miniJavaParser.ThisContext ctx)
     {
@@ -265,6 +305,7 @@ public class PhaseCheck extends miniJavaBaseListener
     public void enterInsideClass(miniJavaParser.InsideClassContext ctx)
     {
         now_scope++;
+        classScope.put(ctx.identifier(0).getText(), now_scope);   // map<class_name> = now_scope
         if (ctx.identifier(1) != null)   // extends     the class should exist already
         {
             int start = ctx.identifier(1).start.getStartIndex();
@@ -290,6 +331,26 @@ public class PhaseCheck extends miniJavaBaseListener
         }
     }
 
+    public void exitInsideClass(miniJavaParser.InsideClassContext ctx)
+    {
+        for (int i = 0; i < ctx.varDeclaration().size(); i++)
+        {
+            String var_name = ctx.varDeclaration(i).getChild(1).getText();
+            if (currentvarSet.get(var_name) != null)
+            {
+                if (vardeclareTime.get(var_name) == classScope.get(ctx.identifier(0).getText()))   // is declared in the current class
+                {
+                    Type var_type = findType(ctx.varDeclaration(i).getChild(0).getText());
+                    if (var_type != Type.jVoid)   //wrong declaration
+                    {
+                        currentvarSet.remove(var_name);
+                        vardeclareTime.remove(var_name);
+                    }
+                }
+            }
+        }
+        System.out.println("s");
+    }
 
 
     public void exitIntValueOfExpression(miniJavaParser.IntValueOfExpressionContext ctx)   // INT in the expression
@@ -376,7 +437,7 @@ public class PhaseCheck extends miniJavaBaseListener
     public void exitLessthan(miniJavaParser.LessthanContext ctx)
     {
         Type a_type = typeprop.get(ctx.expression(0));
-        Type b_type =typeprop.get(ctx.expression(1));
+        Type b_type = typeprop.get(ctx.expression(1));
         if (a_type != Type.jInt || b_type != Type.jInt)
         {
             basic.PrintError(ctx.getStart(), " Requires Int and Int but ( < operation) got " + a_type + " and " + b_type);

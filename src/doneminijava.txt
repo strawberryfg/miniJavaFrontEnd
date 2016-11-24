@@ -7,27 +7,9 @@ mainClass
     'public' 'static' 'void' 'main' '(' 'String' '[' ']' ID ')' '{' statement '}' '}' 
     ;
 
-classDeclaration
-    : 'class' identifier 
-    ( 'extends' identifier )? 
-    '{' ( varDeclaration )* ( methodDeclaration )* '}'             #InsideClass
-	;           
+                             
 
-varDeclaration
-    : type identifier ';'                                          #DeclareVariable
-    ;
-
-methodDeclaration
-    : 'public' type identifier 
-    '(' ( type identifier ( ',' type identifier )* )? ')' '{' ( varDeclaration )* ( statement )* 'return' extendexp ';' '}'   #Method
-	;
-
-                                          
-
-statement
-    : '{' ( statement )* '}'                                       #BracesOfStatement
-	|'if' '(' extendexp ')' statement 'else' statement             #Ifelse
-	|'while' '(' extendexp ')' statement                           #While
+statement    		
 	|'System.out.println' '(' extendexp ')' ';'                    #Println	
 		
     ;

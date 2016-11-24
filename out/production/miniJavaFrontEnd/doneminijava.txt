@@ -7,35 +7,12 @@ mainClass
     'public' 'static' 'void' 'main' '(' 'String' '[' ']' ID ')' '{' statement '}' '}' 
     ;
 
-classDeclaration
-    : 'class' identifier 
-    ( 'extends' identifier )? 
-    '{' ( varDeclaration )* ( methodDeclaration )* '}'             #InsideClass
-	;           
+                             
 
-varDeclaration
-    : type identifier ';'                                          #DeclareVariable
-    ;
-
-methodDeclaration
-    : 'public' type identifier 
-    '(' ( type identifier ( ',' type identifier )* )? ')' '{' ( varDeclaration )* ( statement )* 'return' extendexp ';' '}'   #Method
-	;
-
-type
-    : 'int' '['']'                                                 #IntegerArray
-    |'boolean'                                                     #Boolean
-	|'int'                                                         #Integer
-	|identifier                                                    #Instance
-	;                                                  
-
-statement
-    : '{' ( statement )* '}'                                       #BracesOfStatement
-	|'if' '(' extendexp ')' statement 'else' statement             #Ifelse
+statement    	
 	|'while' '(' extendexp ')' statement                           #While
 	|'System.out.println' '(' extendexp ')' ';'                    #Println	
-	
-	|identifier '[' extendexp ']' '=' extendexp ';'                #ArrayValueAssign
+		
     ;
 
 
