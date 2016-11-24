@@ -12,16 +12,16 @@ public class PhaseCheck extends miniJavaBaseListener
 
     ParseTreeProperty<Type> typeprop = new ParseTreeProperty<Type>();
     int now_scope = 0;
-    public class pair
+    public class class_method_pair
     {
-         String var_name;
-         Type var_type;
-         public pair(String s, Type t)
+         String class_name;
+         String method_name;
+         public class_method_pair(String s, String t)
          {
-             var_name = s;
-             var_type = t;
+             class_name = s;
+             method_name = t;
          }
-         public pair()
+         public class_method_pair()
          {
 
          }
@@ -30,6 +30,8 @@ public class PhaseCheck extends miniJavaBaseListener
     HashMap<String, Integer> varScope = new HashMap<String, Integer>();
     HashSet<String> classSet = new HashSet<String>();
     HashMap<String, Integer> classScope = new HashMap<String, Integer>();
+    HashMap<class_method_pair, HashMap<String, Type> > method_arguments = new HashMap<class_method_pair, HashMap<String, Type>>();
+
 
     public PhaseCheck(GlobalScope globals, ParseTreeProperty<Scope> scopes)
     {
@@ -148,18 +150,24 @@ public class PhaseCheck extends miniJavaBaseListener
     public void enterMethod(miniJavaParser.MethodContext ctx)   //public method inside the class
     {
         now_scope++;
+        HashMap<String, Type> t_hash = new HashMap<String, Type>();
+        class_method_pair t_pair = new class_method_pair(((miniJavaParser.InsideClassContext) ((miniJavaParser.MethodContext) ctx).parent).identifier(0).getText(), ctx.identifier(0).getText());
+        //class name is the getText of identifier(0) of parent, and method name is simply ctx.identifier(0).getText()
+        //e.g. <Tree, Init>  class Tree has Function Init
+        boolean valid_method = true;
         for (int i = 0; i < ctx.identifier().size(); i++)
         {
             int identifier_start = ctx.identifier(i).start.getStartIndex();
             int identifier_stop = ctx.identifier(i).start.getStopIndex();
-            String identifer_name = ctx.start.getInputStream().toString().substring(identifier_start, identifier_stop + 1);
+            String identifier_name = ctx.start.getInputStream().toString().substring(identifier_start, identifier_stop + 1);
             int type_start = ctx.type(i).start.getStartIndex();
             int type_stop = ctx.type(i).start.getStopIndex();
             String type_name = ctx.start.getInputStream().toString().substring(type_start, type_stop + 1);
-            if (currentvarSet.get(identifer_name) != null || classSet.contains(identifer_name))   //maybe it's a predefined class
+            if (currentvarSet.get(identifier_name) != null || classSet.contains(identifier_name))   //maybe it's a predefined class
             {
-                if (i == 0) basic.PrintError(ctx.getStart(), " The method name inside the class " + identifer_name  + " is already defined!");
-                else basic.PrintError(ctx.getStart(), " The argument name of the method inside the class " + identifer_name  + " is already defined!");
+                valid_method = false; //method name or argument name exist already
+                if (i == 0) basic.PrintError(ctx.getStart(), " The method name inside the class " + identifier_name  + " is already defined!");
+                else basic.PrintError(ctx.getStart(), " The argument name of the method inside the class " + identifier_name  + " is already defined!");
                 basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
             }
             else
@@ -167,10 +175,19 @@ public class PhaseCheck extends miniJavaBaseListener
                 Type t_find = findType(type_name);
                 if (t_find != Type.jVoid) // int boolean or class
                 {
-                    currentvarSet.put(identifer_name, t_find);
-                    varScope.put(identifer_name, now_scope);    //add the argument of the method to the var set
+                    currentvarSet.put(identifier_name, t_find);
+                    varScope.put(identifier_name, now_scope);    //add the argument of the method to the var set
+                    t_hash.put(identifier_name, t_find);   //t_find identifer_name  0 means the method name and its type
+                }
+                else
+                {
+                    valid_method = false; //because maybe T t   while T is not a predefined class
                 }
             }
+        }
+        if (valid_method)
+        {
+            method_arguments.put(t_pair, t_hash);
         }
     }
 
@@ -363,7 +380,7 @@ public class PhaseCheck extends miniJavaBaseListener
             typeprop.put(ctx, Type.jBool);
         }
     }
-    
+
     public void exitLessthan(miniJavaParser.LessthanContext ctx)
     {
         Type a_type = typeprop.get(ctx.expression(0));
@@ -449,6 +466,16 @@ public class PhaseCheck extends miniJavaBaseListener
         }
     }
 
+    public void exitCallFunction(miniJavaParser.CallFunctionContext ctx)
+    {
+        if (now_scope == 1) return;  //main class just simply ignore it
+        if (typeprop.get(ctx.expression(0)) != Type.jClass)
+        {
+            basic.PrintError(ctx.getStart(), " The class  " + ctx.expression(0).getText()  + " does not exist right now, so you could not call functions of it!");
+            basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
+        }
+        System.out.println("fsd");
+    }
 
     public void exitBoolTrue(miniJavaParser.BoolTrueContext ctx)
     {
@@ -506,7 +533,7 @@ public class PhaseCheck extends miniJavaBaseListener
     {
         String identifier_name = ctx.identifier().getText();
         boolean class_find = classSet.contains(identifier_name);
-        if (!class_find)
+        if (now_scope !=1 && !class_find) //not in the main class
         {
             basic.PrintError(ctx.getStart(), "The Class " + identifier_name + " you want to new is not a class");
             basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());

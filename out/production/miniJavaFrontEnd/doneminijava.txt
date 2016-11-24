@@ -2,12 +2,7 @@ grammar miniJava;
 
 goal: mainClass classDeclaration+;
 
-mainClass
-    : 'class' identifier '{' 
-    'public' 'static' 'void' 'main' '(' 'String' '[' ']' ID ')' '{' statement '}' '}' 
-    ;
-
-                     
+ 
 
 expression
     :    
