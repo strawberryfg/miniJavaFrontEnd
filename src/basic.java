@@ -356,17 +356,7 @@ public class basic {
             "    return ifound ;\n" +
             "    }\n" +
             "\n" +
-            "    // Invoke the method to really print the tree elements\n" +
-            "    public boolean Print(){\n" +
-            "    Tree current_node;\n" +
-            "    boolean ntb ;\n" +
-            "\n" +
-            "    current_node = this ;\n" +
-            "    ntb = this.RecPrint(current_node);\n" +
-            "    return true ;\n" +
-            "    }\n" +
-            "\n" +
-            "    // Print the elements of the tree\n" +
+            "\t    // Print the elements of the tree\n" +
             "    public boolean RecPrint(Tree node){\n" +
             "    boolean ntb ;\n" +
             "\n" +
@@ -384,10 +374,23 @@ public class basic {
             "    } else ntb = true ;\n" +
             "    return true ;\n" +
             "    }\n" +
+            "\t\n" +
+            "    // Invoke the method to really print the tree elements\n" +
+            "    public boolean Print(){\n" +
+            "    Tree current_node;\n" +
+            "    boolean ntb ;\n" +
+            "\n" +
+            "    current_node = this ;\n" +
+            "    ntb = this.RecPrint(current_node);\n" +
+            "    return true ;\n" +
+            "    }\n" +
+            "\n" +
+            "\n" +
             "\n" +
             "}\n" +
             "   \n" +
-            "\n" +
+            "class Seg {\n" +
+            "}\n" +
             "\n" +
             "// This class invokes the methods to create a tree,\n" +
             "// insert, delete and serach for  elements on it\n" +
@@ -404,8 +407,11 @@ public class basic {
             "\tint d;\n" +
             "\tint e;\n" +
             "    int [] wqf;\n" +
+            "\tTree tree_orz;\n" +
+            "\tSeg seg_orz;\n" +
             "\tint 是3;\n" +
             "\t\n" +
+            "\ttree_orz = seg_orz;\n" +
             "    root = new Tree();\n" +
             "    ntb = root.Init(16);\n" +
             "    ntb = root.Print();\n" +

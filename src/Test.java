@@ -21,8 +21,7 @@ public class Test {
             TokenStream tokenStream = new CommonTokenStream(lexer);
             miniJavaParser parser = new miniJavaParser(tokenStream);
             parser.removeErrorListeners();
-            //parser.addErrorListener(new test_listener.VerboseListener());
-            //parser.addErrorListener(new test_listener2.UnderlineListener());
+            //parser.addErrorListener(new test_listener.UnderlineListener());
             ParseTree tree = parser.goal();
 
             ParseTreeWalker walker = new ParseTreeWalker();

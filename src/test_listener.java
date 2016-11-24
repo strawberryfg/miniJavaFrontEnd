@@ -1,30 +1,33 @@
+import org.antlr.runtime.MismatchedNotSetException;
+import org.antlr.runtime.MismatchedTokenException;
 import org.antlr.v4.runtime.*;
 import java.util.*;
 
 public class test_listener {
-    public static class VerboseListener extends BaseErrorListener {
-        @Override
+    public static class UnderlineListener extends BaseErrorListener {
+
         public void syntaxError(Recognizer<?, ?> recognizer,
                                 Object offendingSymbol,
                                 int line, int charPositionInLine,
                                 String msg,
-                                RecognitionException e)
-        {
-            List<String> stack = ((Parser)recognizer).getRuleInvocationStack();
-            Collections.reverse(stack);
-            System.err.println("rule stack: "+stack);
-            System.err.println("line "+line+":"+charPositionInLine+" at "+
-                    offendingSymbol+": "+msg);
+                                RecognitionException e) {
+            System.err.println("line "+line+":"+charPositionInLine+" "+msg);
+            basic.underlineError(recognizer,(Token)offendingSymbol,
+                    line, charPositionInLine);
+            String f=e.toString();
+            System.err.println("It's a syntax error!\n");
         }
 
+
     }
-    public static void main(String[] args) throws Exception {
+    public void main(String[] args) throws Exception {
         ANTLRInputStream input = new ANTLRInputStream(System.in);
         miniJavaLexer lexer = new miniJavaLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         miniJavaParser parser = new miniJavaParser(tokens);
         parser.removeErrorListeners(); // remove ConsoleErrorListener
-        parser.addErrorListener(new VerboseListener()); // add ours
-        parser.goal(); // parse as usual
+        parser.addErrorListener(new UnderlineListener());
+        parser.goal();
+
     }
 }
