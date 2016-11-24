@@ -49,6 +49,11 @@ public class basic {
             "\tTree tmp;\n" +
             "    int key ;\n" +
             "\tint Tree;\n" +
+            "\tint return;\n" +
+            "\tString String;\n" +
+            "\tboolean public;\n" +
+            "\tTree extends;\n" +
+            "\tTree static\n" +
             "\tint f;\n" +
             "\tint zxl;\n" +
             "\tboolean b;\n" +
@@ -165,6 +170,7 @@ public class basic {
             "\n" +
             "    new_node = new Tree();\n" +
             "    ntb = new_node.Init(v_key) ;\n" +
+            "\tntb = new_node.Init(v_key, 3);\n" +
             "    current_node = this ;\n" +
             "    cont = true ;\n" +
             "    while (cont){\n" +
@@ -228,7 +234,11 @@ public class basic {
             "                (!current_node.GetHas_Left()) )\n" +
             "                ntb = true ;\n" +
             "            else \n" +
-            "                ntb = this.Remove(parent_node,current_node); \n" +
+            "\t\t\t{\n" +
+            "\t\t\t\tntb = this.Remove(parent_node,current_node); \n" +
+            "\t\t\t\tntb = this.Remove(parent_node);\n" +
+            "\t\t\t\tntb = this.Remove(parent_node, current_node, parent_node, 3);\n" +
+            "\t\t\t}                \n" +
             "            else ntb = this.Remove(parent_node,current_node);\n" +
             "            found = true ;\n" +
             "            cont = false ;\n" +

@@ -30,13 +30,26 @@ public class PhaseCheck extends miniJavaBaseListener
     HashMap<String, Integer> varScope = new HashMap<String, Integer>();
     HashSet<String> classSet = new HashSet<String>();
     HashMap<String, Integer> classScope = new HashMap<String, Integer>();
-    HashMap<class_method_pair, HashMap<String, Type> > method_arguments = new HashMap<class_method_pair, HashMap<String, Type>>();
-
+    HashMap<String, String> classInstanceSet = new HashMap<String, String>();   // the set of instances of classes
+    HashMap<class_method_pair, HashMap<Integer, Type> > method_arguments = new HashMap<class_method_pair, HashMap<Integer, Type>>(); //integer stands for the index of the arguemnt list
+    String current_class_name = "";   //the name of current class    this means it
 
     public PhaseCheck(GlobalScope globals, ParseTreeProperty<Scope> scopes)
     {
         this.scopes = scopes;
         this.globals = globals;
+        //key word which cannot be used as argument reserved word
+        currentvarSet.put("class", Type.jVoid); currentvarSet.put("public", Type.jVoid); currentvarSet.put("static", Type.jVoid); currentvarSet.put("void", Type.jVoid);
+        currentvarSet.put("main", Type.jVoid); currentvarSet.put("String", Type.jVoid); currentvarSet.put("extends", Type.jVoid); currentvarSet.put("return", Type.jVoid);
+        currentvarSet.put("int", Type.jVoid); currentvarSet.put("int []", Type.jVoid); currentvarSet.put("boolean", Type.jVoid); currentvarSet.put("if", Type.jVoid);
+        currentvarSet.put("while", Type.jVoid); currentvarSet.put("true", Type.jVoid); currentvarSet.put("false", Type.jVoid); currentvarSet.put("this", Type.jVoid);
+        currentvarSet.put("new", Type.jVoid); currentvarSet.put("length", Type.jVoid); currentvarSet.put("else", Type.jVoid);
+
+        classSet.add("class"); classSet.add("public"); classSet.add("static"); classSet.add("void");
+        classSet.add("main"); classSet.add("String"); classSet.add("extends"); classSet.add("return");
+        classSet.add("int"); classSet.add("int []"); classSet.add("boolean"); classSet.add("if");
+        classSet.add("while"); classSet.add("true"); classSet.add("false"); classSet.add("this");
+        classSet.add("new"); classSet.add("length"); classSet.add("else");
     }
 
     public void enterGoal(miniJavaParser.GoalContext ctx)
@@ -86,6 +99,7 @@ public class PhaseCheck extends miniJavaBaseListener
         int start = ctx.identifier(0).start.getStartIndex();
         int stop = ctx.identifier(0).start.getStopIndex();
         String class_name = ctx.identifier(0).start.getInputStream().toString().substring(start, stop + 1);
+        current_class_name = class_name;
         if (classSet.contains(class_name))
         {
             basic.PrintError(ctx.getStart(), " The class " + class_name + " already exists right now! ");
@@ -110,8 +124,12 @@ public class PhaseCheck extends miniJavaBaseListener
                     Type var_type = findType(ctx.varDeclaration(i).getChild(0).getText());
                     if (var_type != Type.jVoid)   //wrong declaration
                     {
-                        currentvarSet.remove(var_name);
-                        varScope.remove(var_name);
+                        if (currentvarSet.containsKey(var_name))
+                        {
+                            if (var_type == Type.jClass) classInstanceSet.remove(var_name);
+                            currentvarSet.remove(var_name);
+                            varScope.remove(var_name);
+                        }
                     }
                 }
             }
@@ -142,7 +160,9 @@ public class PhaseCheck extends miniJavaBaseListener
         }
         else if (now_scope != 1) //not in the main function
         {
-            currentvarSet.put(var_name, typeprop.get(ctx.type()));
+            Type var_type = typeprop.get(ctx.type());
+            if (var_type == Type.jClass) classInstanceSet.put(var_name, type_name);   //pair <instance_name, which class this instance belong to> e.g. Tree tree_hello  build pair<"tree_hello", "Tree">
+            currentvarSet.put(var_name, var_type);
             varScope.put(var_name, now_scope);
         }
     }
@@ -150,7 +170,7 @@ public class PhaseCheck extends miniJavaBaseListener
     public void enterMethod(miniJavaParser.MethodContext ctx)   //public method inside the class
     {
         now_scope++;
-        HashMap<String, Type> t_hash = new HashMap<String, Type>();
+        HashMap<Integer, Type> t_hash = new HashMap<Integer, Type>();
         class_method_pair t_pair = new class_method_pair(((miniJavaParser.InsideClassContext) ((miniJavaParser.MethodContext) ctx).parent).identifier(0).getText(), ctx.identifier(0).getText());
         //class name is the getText of identifier(0) of parent, and method name is simply ctx.identifier(0).getText()
         //e.g. <Tree, Init>  class Tree has Function Init
@@ -175,9 +195,10 @@ public class PhaseCheck extends miniJavaBaseListener
                 Type t_find = findType(type_name);
                 if (t_find != Type.jVoid) // int boolean or class
                 {
+                    if (t_find == Type.jClass) classInstanceSet.put(identifier_name, type_name)   //instance, class name
                     currentvarSet.put(identifier_name, t_find);
                     varScope.put(identifier_name, now_scope);    //add the argument of the method to the var set
-                    t_hash.put(identifier_name, t_find);   //t_find identifer_name  0 means the method name and its type
+                    t_hash.put(i, t_find);   //the i-th argument's type is t_find
                 }
                 else
                 {
@@ -197,21 +218,22 @@ public class PhaseCheck extends miniJavaBaseListener
         {
             int identifier_start = ctx.identifier(i).start.getStartIndex();
             int identifier_stop = ctx.identifier(i).start.getStopIndex();
-            String identifer_name = ctx.start.getInputStream().toString().substring(identifier_start, identifier_stop + 1);
+            String identifier_name = ctx.start.getInputStream().toString().substring(identifier_start, identifier_stop + 1);
             int type_start = ctx.type(i).start.getStartIndex();
             int type_stop = ctx.type(i).start.getStopIndex();
             String type_name = ctx.start.getInputStream().toString().substring(type_start, type_stop + 1);
-            if (currentvarSet.get(identifer_name) != null)
+            if (currentvarSet.get(identifier_name) != null)
             {
-                if (varScope.get(identifer_name) == now_scope)  //it is declared in this scope   can ensure it's exactly this method
+                if (varScope.get(identifier_name) == now_scope)  //it is declared in this scope   can ensure it's exactly this method
                 {
                     Type t_find = findType(type_name);
                     if (t_find != Type.jVoid)
                     {
-                        if (currentvarSet.get(identifer_name)  != null)
+                        if (currentvarSet.get(identifier_name)  != null)
                         {
-                            currentvarSet.remove(identifer_name);   //remove it from the method
-                            varScope.remove(identifer_name);
+                            if (t_find == Type.jClass) classInstanceSet.remove(identifier_name); //remove the instance
+                            currentvarSet.remove(identifier_name);   //remove it from the method
+                            varScope.remove(identifier_name);
                         }
 
                     }
@@ -221,19 +243,20 @@ public class PhaseCheck extends miniJavaBaseListener
 
         for (int i = 0; i < ctx.varDeclaration().size(); i++)
         {
-            String identifer_name = ctx.varDeclaration(i).getChild(1).getText();
+            String identifier_name = ctx.varDeclaration(i).getChild(1).getText();
             String type_name = ctx.varDeclaration(i).getChild(0).getText();
-            if (currentvarSet.get(identifer_name) != null)
+            if (currentvarSet.get(identifier_name) != null)
             {
-                if (varScope.get(identifer_name) == now_scope)  //it is declared in this scope
+                if (varScope.get(identifier_name) == now_scope)  //it is declared in this scope
                 {
                     Type t_find = findType(type_name);
                     if (t_find != Type.jVoid)
                     {
-                        if (currentvarSet.get(identifer_name)  != null)
+                        if (currentvarSet.get(identifier_name)  != null)
                         {
-                            currentvarSet.remove(identifer_name);   //remove it from the method
-                            varScope.remove(identifer_name);
+                            if (t_find == Type.jClass) classInstanceSet.remove(identifier_name);
+                            currentvarSet.remove(identifier_name);   //remove it from the method
+                            varScope.remove(identifier_name);
                         }
                     }
                 }//otherwise it should not be removed
@@ -468,13 +491,57 @@ public class PhaseCheck extends miniJavaBaseListener
 
     public void exitCallFunction(miniJavaParser.CallFunctionContext ctx)
     {
-        if (now_scope == 1) return;  //main class just simply ignore it
+        if (now_scope == 1) return;  //main class just simply ignore it    main class will call like new F.start()
         if (typeprop.get(ctx.expression(0)) != Type.jClass)
         {
             basic.PrintError(ctx.getStart(), " The class  " + ctx.expression(0).getText()  + " does not exist right now, so you could not call functions of it!");
             basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
+            typeprop.put(ctx, Type.jVoid);
         }
-        System.out.println("fsd");
+        else
+        {
+            boolean type_mismatch = false;
+            String class_name = ctx.expression(0).getText();
+            if (class_name.equals("this")) class_name = current_class_name;    //because of this pointer
+            String class_type = "";
+            if (classInstanceSet.containsKey(class_name)) class_type = classInstanceSet.get(class_name); // e.g. class Tree Tree f_tree  then f_tree is the class_name while Tree is the class type
+            if (class_type.equals(""))
+            {
+                basic.PrintError(ctx.getStart(), class_name + " is not a predefined class, and you cannot call its function" );
+                basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex()); //so that there is no redundancy
+                typeprop.put(ctx, Type.jVoid);
+            }
+            else
+            {
+                class_method_pair call_function = new class_method_pair(class_type, ctx.identifier().getText()); // <Tree , Init>  Tree is the class name not instance name
+                HashMap<Integer, Type> function_args = method_arguments.get(call_function);    // call function 's arguments  (<name, type> pair)
+                for (int i = 1; i < ctx.expression().size(); i++) //0 is the Instance name   (use the function of class Instance)
+                {
+                    Type arg_i_type = typeprop.get(ctx.expression(i));   //get the type of i-th argument of the method function
+                    Type expected_type = Type.jVoid;
+                    if (function_args.containsKey(i)) expected_type = function_args.get(i);   // i = 1 is the first argument 's type
+                    if (expected_type == Type.jVoid)  //key i does not exist remember the pair is <index, type of argument>
+                    {
+                        basic.PrintError(ctx.getStart(), " The " + i + " -th argument of the function does not exist in the declaration, you cannot pass parameter!" );
+                    }
+                    else if (expected_type != arg_i_type)
+                    {
+                        basic.PrintError(ctx.getStart(), " The definition type of " + i + " -th argument of the function + " + class_name + " is " + expected_type + " while the real type is " + arg_i_type);
+                        type_mismatch = true; //flag
+                    }
+                }
+                if (type_mismatch)
+                {
+                    basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex()); //so that there is no redundancy
+                    typeprop.put(ctx, Type.jVoid);
+                }
+                else
+                {
+                    Type return_type = function_args.get(0); // 0 is the class method (function)  's type
+                    typeprop.put(ctx, return_type);
+                }
+            }
+        }
     }
 
     public void exitBoolTrue(miniJavaParser.BoolTrueContext ctx)
