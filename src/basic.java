@@ -40,6 +40,8 @@ public class basic {
             "    System.out.println(new BT().Start());\n" +
             "\t\n" +
             "    }\n" +
+            "    int f;\t\n" +
+            "\tf = 3;\n" +
             "}\n" +
             "class Tree{\n" +
             "    Tree left ;\n" +
@@ -355,6 +357,7 @@ public class basic {
             "        ntb = this.RecPrint(node.GetLeft());\n" +
             "    } else ntb = true ;\n" +
             "    System.out.println(node.GetKey());\n" +
+            "\tSystem.out.println(0ttt);\n" +
             "    if (node.GetHas_Right()){\n" +
             "        //auxtree01 = node.GetRight() ;\n" +
             "        //ntb = this.RecPrint(auxtree01);\n" +
@@ -379,8 +382,10 @@ public class basic {
             "\tint a;\n" +
             "\tint b;\n" +
             "\tint c;\n" +
+            "\tint d;\n" +
+            "\tint e;\n" +
             "    int [] wqf;\n" +
-            "\t\n" +
+            "\tint 是3;\n" +
             "\t\n" +
             "    root = new Tree();\n" +
             "    ntb = root.Init(16);\n" +
@@ -397,8 +402,12 @@ public class basic {
             "    ntb = root.Print();\n" +
             "\twqf = new int [( (a + b * 5) / 3)];\n" +
             "\twqf[ntb] = \"s\";\n" +
+            "\twqf[((3+b)] = 1;\n" +
+            "\twqf[((((b+c * d / e)] = 2;\n" +
+            "\twqf[23 + (324 * d )))] = 43214;\n" +
             "\twqf[3] = \"fds\";\n" +
             "\twqf[2] = c;\n" +
+            "\t\n" +
             "    System.out.println(root.Search(24));\n" +
             "    System.out.println(root.Search(12));\n" +
             "    System.out.println(root.Search(16));\n" +

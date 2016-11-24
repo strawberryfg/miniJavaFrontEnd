@@ -4,7 +4,7 @@ goal: mainClass classDeclaration+;
 
 mainClass
     : 'class' identifier '{' 
-    'public' 'static' 'void' 'main' '(' 'String' '[' ']' ID ')' '{' statement '}' '}' 
+    'public' 'static' 'void' 'main' '(' 'String' '[' ']' ID ')' '{' statement '}' '}'    #EnterMainClass
     ;
 
 classDeclaration
@@ -40,8 +40,8 @@ statement
 
 extendexp
     :expression                                                   #SingleExpression
-    |expression ')' {notifyErrorListeners("too many ')'");}       #ExpressionRightbrace
-    |'(' expression {notifyErrorListeners("too many '('");}       #LeftbraceExpression
+    |expression ')'                                               #ExpressionRightbrace
+    |'(' expression                                               #LeftbraceExpression
     ;
 
 expression
@@ -66,7 +66,7 @@ expression
 
 identifier
     :ID                                                                             #Variable
-    |WRONG {notifyErrorListeners("Wrong ID");}                                      #WrongID   
+    |WRONG                                                                          #WrongID   
     ;                                                                              
 
 

@@ -17,15 +17,17 @@ public interface miniJavaListener extends ParseTreeListener {
 	 */
 	void exitGoal(miniJavaParser.GoalContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link miniJavaParser#mainClass}.
+	 * Enter a parse tree produced by the {@code EnterMainClass}
+	 * labeled alternative in {@link miniJavaParser#mainClass}.
 	 * @param ctx the parse tree
 	 */
-	void enterMainClass(miniJavaParser.MainClassContext ctx);
+	void enterEnterMainClass(miniJavaParser.EnterMainClassContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link miniJavaParser#mainClass}.
+	 * Exit a parse tree produced by the {@code EnterMainClass}
+	 * labeled alternative in {@link miniJavaParser#mainClass}.
 	 * @param ctx the parse tree
 	 */
-	void exitMainClass(miniJavaParser.MainClassContext ctx);
+	void exitEnterMainClass(miniJavaParser.EnterMainClassContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code InsideClass}
 	 * labeled alternative in {@link miniJavaParser#classDeclaration}.

@@ -22,7 +22,7 @@ public class Test {
             miniJavaParser parser = new miniJavaParser(tokenStream);
             parser.removeErrorListeners();
             //parser.addErrorListener(new test_listener.VerboseListener());
-            parser.addErrorListener(new test_listener2.UnderlineListener());
+            //parser.addErrorListener(new test_listener2.UnderlineListener());
             ParseTree tree = parser.goal();
 
             ParseTreeWalker walker = new ParseTreeWalker();

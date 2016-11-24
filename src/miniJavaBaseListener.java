@@ -27,13 +27,13 @@ public class miniJavaBaseListener implements miniJavaListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterMainClass(miniJavaParser.MainClassContext ctx) { }
+	@Override public void enterEnterMainClass(miniJavaParser.EnterMainClassContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitMainClass(miniJavaParser.MainClassContext ctx) { }
+	@Override public void exitEnterMainClass(miniJavaParser.EnterMainClassContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

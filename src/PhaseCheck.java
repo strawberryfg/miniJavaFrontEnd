@@ -7,9 +7,6 @@ import java.util.HashMap;
 public class PhaseCheck extends miniJavaBaseListener
 {
     ParseTreeProperty<Scope> scopes;
-
-
-
     GlobalScope globals;
     Scope currentScope;
 
@@ -30,7 +27,7 @@ public class PhaseCheck extends miniJavaBaseListener
          }
     }
     HashMap<String, Type> currentvarSet = new HashMap<String, Type>();   //each variable has an unique
-    HashMap<String, Integer> vardeclareTime = new HashMap<String, Integer>();
+    HashMap<String, Integer> varScope = new HashMap<String, Integer>();
     HashSet<String> classSet = new HashSet<String>();
     HashMap<String, Integer> classScope = new HashMap<String, Integer>();
 
@@ -60,6 +57,93 @@ public class PhaseCheck extends miniJavaBaseListener
         return Type.jVoid;   // not a class or any type
     }
 
+    public void enterEnterMainClass(miniJavaParser.EnterMainClassContext ctx)
+    {
+        now_scope++; //it's the first scope since it is the main class so any variable declaration in this scope should not be added permanently into the map or set
+        System.out.println("fds");
+        classSet.add(ctx.identifier().getText());
+        classScope.put(ctx.identifier().getText(), now_scope);   // main class name
+        currentvarSet.put("main", Type.jVoid);  //"main" function can not be used
+        varScope.put("main", now_scope);
+    }
+
+    public void enterInsideClass(miniJavaParser.InsideClassContext ctx)
+    {
+        now_scope++;
+        if (ctx.identifier(1) != null)   // extends     the class should exist already
+        {
+            int start = ctx.identifier(1).start.getStartIndex();
+            int stop = ctx.identifier(1).start.getStopIndex();
+            String class_name = ctx.identifier(1).start.getInputStream().toString().substring(start, stop + 1);
+            if (!classSet.contains(class_name))   //the class does not exist currently
+            {
+                basic.PrintError(ctx.getStart(), " The extended class " + class_name + " does not exist right now! ");
+                basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
+            }
+        }
+        int start = ctx.identifier(0).start.getStartIndex();
+        int stop = ctx.identifier(0).start.getStopIndex();
+        String class_name = ctx.identifier(0).start.getInputStream().toString().substring(start, stop + 1);
+        if (classSet.contains(class_name))
+        {
+            basic.PrintError(ctx.getStart(), " The class " + class_name + " already exists right now! ");
+            basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
+        }
+        else
+        {
+            classSet.add(class_name);
+            classScope.put(ctx.identifier(0).getText(), now_scope);   // map<class_name> = now_scope
+        }
+    }
+
+    public void exitInsideClass(miniJavaParser.InsideClassContext ctx)
+    {
+        for (int i = 0; i < ctx.varDeclaration().size(); i++)
+        {
+            String var_name = ctx.varDeclaration(i).getChild(1).getText();
+            if (currentvarSet.get(var_name) != null)
+            {
+                if (varScope.get(var_name) == classScope.get(ctx.identifier(0).getText()))   // is declared in the current class
+                {
+                    Type var_type = findType(ctx.varDeclaration(i).getChild(0).getText());
+                    if (var_type != Type.jVoid)   //wrong declaration
+                    {
+                        currentvarSet.remove(var_name);
+                        varScope.remove(var_name);
+                    }
+                }
+            }
+        }
+        System.out.println("s");
+    }
+
+    public void exitDeclareVariable(miniJavaParser.DeclareVariableContext ctx)
+    {
+        int type_start = ctx.type().start.getStartIndex();
+        int type_stop = ctx.type().start.getStopIndex();
+        int identifier_start = ctx.identifier().start.getStartIndex();
+        int identifier_stop = ctx.identifier().start.getStopIndex();
+        String type_name = ctx.start.getInputStream().toString().substring(type_start, type_stop + 1);
+        if (!type_name.equals("int []") && !type_name.equals("int") && !type_name.equals("boolean"))
+        {
+            if (!classSet.contains(type_name))   // does not has this class now
+            {
+                basic.PrintError(ctx.getStart(), " The class you are using " + type_name + " does not xists right now! ");
+                basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
+            }
+        }
+        String var_name = ctx.start.getInputStream().toString().substring(identifier_start, identifier_stop + 1);
+        if (currentvarSet.get(var_name) != null || classSet.contains(var_name))   //maybe it's a predefined class
+        {
+            basic.PrintError(ctx.getStart(), " The variable " + var_name + " already exists right now! ");
+            basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
+        }
+        else if (now_scope != 1) //not in the main function
+        {
+            currentvarSet.put(var_name, typeprop.get(ctx.type()));
+            varScope.put(var_name, now_scope);
+        }
+    }
 
     public void enterMethod(miniJavaParser.MethodContext ctx)   //public method inside the class
     {
@@ -84,7 +168,7 @@ public class PhaseCheck extends miniJavaBaseListener
                 if (t_find != Type.jVoid) // int boolean or class
                 {
                     currentvarSet.put(identifer_name, t_find);
-                    vardeclareTime.put(identifer_name, now_scope);    //add the argument of the method to the var set
+                    varScope.put(identifer_name, now_scope);    //add the argument of the method to the var set
                 }
             }
         }
@@ -102,7 +186,7 @@ public class PhaseCheck extends miniJavaBaseListener
             String type_name = ctx.start.getInputStream().toString().substring(type_start, type_stop + 1);
             if (currentvarSet.get(identifer_name) != null)
             {
-                if (vardeclareTime.get(identifer_name) == now_scope)  //it is declared in this scope   can ensure it's exactly this method
+                if (varScope.get(identifer_name) == now_scope)  //it is declared in this scope   can ensure it's exactly this method
                 {
                     Type t_find = findType(type_name);
                     if (t_find != Type.jVoid)
@@ -110,7 +194,7 @@ public class PhaseCheck extends miniJavaBaseListener
                         if (currentvarSet.get(identifer_name)  != null)
                         {
                             currentvarSet.remove(identifer_name);   //remove it from the method
-                            vardeclareTime.remove(identifer_name);
+                            varScope.remove(identifer_name);
                         }
 
                     }
@@ -124,7 +208,7 @@ public class PhaseCheck extends miniJavaBaseListener
             String type_name = ctx.varDeclaration(i).getChild(0).getText();
             if (currentvarSet.get(identifer_name) != null)
             {
-                if (vardeclareTime.get(identifer_name) == now_scope)  //it is declared in this scope
+                if (varScope.get(identifer_name) == now_scope)  //it is declared in this scope
                 {
                     Type t_find = findType(type_name);
                     if (t_find != Type.jVoid)
@@ -132,7 +216,7 @@ public class PhaseCheck extends miniJavaBaseListener
                         if (currentvarSet.get(identifer_name)  != null)
                         {
                             currentvarSet.remove(identifer_name);   //remove it from the method
-                            vardeclareTime.remove(identifer_name);
+                            varScope.remove(identifer_name);
                         }
                     }
                 }//otherwise it should not be removed
@@ -168,11 +252,14 @@ public class PhaseCheck extends miniJavaBaseListener
         }
     }
 
-    public void exitPrintln(miniJavaParser.PrintlnContext)
-
-    public void exitThis(miniJavaParser.ThisContext ctx)
+    public void exitPrintln(miniJavaParser.PrintlnContext ctx)
     {
-        typeprop.put(ctx, Type.jClass); //this is a class
+        Type condition_type = typeprop.get(ctx.extendexp());
+        if (condition_type == Type.jVoid)
+        {
+            basic.PrintError(ctx.getStart(), "The content you want to print out is void");
+            basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
+        }
     }
 
     public void exitAssign(miniJavaParser.AssignContext ctx)   //assign a value to a variable
@@ -216,174 +303,12 @@ public class PhaseCheck extends miniJavaBaseListener
         }
     }
 
-    public void exitNewClass(miniJavaParser.NewClassContext ctx)
+
+
+    public void exitWrongID(miniJavaParser.WrongIDContext ctx)
     {
-        String identifier_name = ctx.identifier().getText();
-        boolean class_find = classSet.contains(identifier_name);
-        if (!class_find)
-        {
-            basic.PrintError(ctx.getStart(), "The Class " + identifier_name + " you want to new is not a class");
-            basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
-        }
-        else
-        {
-            typeprop.put(ctx, Type.jClass);
-        }
-    }
-
-    public void exitNewIntArray(miniJavaParser.NewIntArrayContext ctx)
-    {
-        Type t_type = typeprop.get(ctx.expression());
-        if (t_type != Type.jInt)
-        {
-            basic.PrintError(ctx.getStart(), " new int [num] num should be a integer but got " + t_type);
-            basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
-        }
-        else
-        {
-            typeprop.put(ctx, Type.jArray);
-        }
-    }
-
-    public void exitSingleExpression(miniJavaParser.SingleExpressionContext ctx)
-    {
-        typeprop.put(ctx,typeprop.get(ctx.expression()));
-    }
-
-    public void exitBracketpair(miniJavaParser.BracketpairContext ctx)
-    {
-        Type t_expression = typeprop.get(ctx.expression());
-        if (t_expression == Type.jVoid)
-        {
-            basic.PrintError(ctx.getStart(), " The expression you want to add bracket pairs is not valid" );
-            basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
-        }
-        else
-        {
-            typeprop.put(ctx, t_expression);
-        }
-    }
-
-    public void exitNegative(miniJavaParser.NegativeContext ctx)
-    {
-        Type t_expression = typeprop.get(ctx.expression());
-        if ( t_expression == Type.jBool)
-        {
-            typeprop.put(ctx, Type.jBool);
-        }
-        else
-        {
-            basic.PrintError(ctx.getStart(), " The expression you want to negate is not a boolean but a " +  t_expression);
-            basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
-            typeprop.put(ctx, Type.jVoid);
-        }
-    }
-
-    public void exitVarOfExpression(miniJavaParser.VarOfExpressionContext ctx)
-    {
-        int start = ctx.start.getStartIndex();
-        int stop = ctx.start.getStopIndex();
-        String var_name = ctx.start.getInputStream().toString().substring(start, stop + 1);
-
-        Type var_find = currentvarSet.get(var_name);
-        boolean class_find = classSet.contains(var_name);
-        if (var_find == null && !class_find)    // the variable need to be defined does not exist right now
-        {
-            basic.PrintError(ctx.getStart(), " The variable you just used in the code " + var_name  + " is not a variable or a class right now!");
-            basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
-        }
-        else if (var_find != null)
-        {
-            typeprop.put(ctx, var_find);
-        }
-        else if (class_find)
-        {
-            typeprop.put(ctx, Type.jClass);
-        }
-    }
-
-    public void enterInsideClass(miniJavaParser.InsideClassContext ctx)
-    {
-        now_scope++;
-        classScope.put(ctx.identifier(0).getText(), now_scope);   // map<class_name> = now_scope
-        if (ctx.identifier(1) != null)   // extends     the class should exist already
-        {
-            int start = ctx.identifier(1).start.getStartIndex();
-            int stop = ctx.identifier(1).start.getStopIndex();
-            String class_name = ctx.identifier(1).start.getInputStream().toString().substring(start, stop + 1);
-            if (!classSet.contains(class_name))   //the class does not exist currently
-            {
-                basic.PrintError(ctx.getStart(), " The extended class " + class_name + " does not exist right now! ");
-                basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
-            }
-        }
-        int start = ctx.identifier(0).start.getStartIndex();
-        int stop = ctx.identifier(0).start.getStopIndex();
-        String class_name = ctx.identifier(0).start.getInputStream().toString().substring(start, stop + 1);
-        if (classSet.contains(class_name))
-        {
-            basic.PrintError(ctx.getStart(), " The class " + class_name + " already exists right now! ");
-            basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
-        }
-        else
-        {
-            classSet.add(class_name);
-        }
-    }
-
-    public void exitInsideClass(miniJavaParser.InsideClassContext ctx)
-    {
-        for (int i = 0; i < ctx.varDeclaration().size(); i++)
-        {
-            String var_name = ctx.varDeclaration(i).getChild(1).getText();
-            if (currentvarSet.get(var_name) != null)
-            {
-                if (vardeclareTime.get(var_name) == classScope.get(ctx.identifier(0).getText()))   // is declared in the current class
-                {
-                    Type var_type = findType(ctx.varDeclaration(i).getChild(0).getText());
-                    if (var_type != Type.jVoid)   //wrong declaration
-                    {
-                        currentvarSet.remove(var_name);
-                        vardeclareTime.remove(var_name);
-                    }
-                }
-            }
-        }
-        System.out.println("s");
-    }
-
-
-    public void exitIntValueOfExpression(miniJavaParser.IntValueOfExpressionContext ctx)   // INT in the expression
-    {
-        typeprop.put(ctx, Type.jInt);
-    }
-
-    public void exitDeclareVariable(miniJavaParser.DeclareVariableContext ctx)
-    {
-        int type_start = ctx.type().start.getStartIndex();
-        int type_stop = ctx.type().start.getStopIndex();
-        int identifier_start = ctx.identifier().start.getStartIndex();
-        int identifier_stop = ctx.identifier().start.getStopIndex();
-        String type_name = ctx.start.getInputStream().toString().substring(type_start, type_stop + 1);
-        if (!type_name.equals("int []") && !type_name.equals("int") && !type_name.equals("boolean"))
-        {
-            if (!classSet.contains(type_name))   // does not has this class now
-            {
-                basic.PrintError(ctx.getStart(), " The class you are using " + type_name + " does not xists right now! ");
-                basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
-            }
-        }
-        String var_name = ctx.start.getInputStream().toString().substring(identifier_start, identifier_stop + 1);
-        if (currentvarSet.get(var_name) != null || classSet.contains(var_name))   //maybe it's a predefined class
-        {
-            basic.PrintError(ctx.getStart(), " The variable " + var_name + " already exists right now! ");
-            basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
-        }
-        else
-        {
-            currentvarSet.put(var_name, typeprop.get(ctx.type()));
-            vardeclareTime.put(var_name, now_scope);
-        }
+        basic.PrintError(ctx.getStart(), "The variable starts with digit, which is not prohibited here!");
+        basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
     }
 
     public void exitIntegerArray(miniJavaParser.IntegerArrayContext ctx)
@@ -406,17 +331,22 @@ public class PhaseCheck extends miniJavaBaseListener
         typeprop.put(ctx, Type.jClass);
     }
 
-    public void exitStringValueOfExpression(miniJavaParser.StringValueOfExpressionContext ctx)
+    public void exitSingleExpression(miniJavaParser.SingleExpressionContext ctx)
     {
-        typeprop.put(ctx, Type.jString);
+        typeprop.put(ctx,typeprop.get(ctx.expression()));
     }
 
-    public void exitBoolTrue(miniJavaParser.BoolTrueContext ctx)
+    public void exitExpressionRightbrace(miniJavaParser.ExpressionRightbraceContext ctx)
     {
-        typeprop.put(ctx, Type.jBool);
+        basic.PrintError(ctx.getStart(), "The braces are not perfectedly matched, the expression ends with too many ')' ");
+        basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
     }
 
-    public void exitBoolFalse(miniJavaParser.BoolFalseContext ctx) { typeprop.put(ctx, Type.jBool); }
+    public void exitLeftbraceExpression(miniJavaParser.LeftbraceExpressionContext ctx)
+    {
+        basic.PrintError(ctx.getStart(), "The braces are not perfectedly matched, the expression starts with too many '(' ");
+        basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
+    }
 
     public void exitAnd(miniJavaParser.AndContext ctx)   //a && b  a and b should be both boolean
     {
@@ -433,7 +363,7 @@ public class PhaseCheck extends miniJavaBaseListener
             typeprop.put(ctx, Type.jBool);
         }
     }
-
+    
     public void exitLessthan(miniJavaParser.LessthanContext ctx)
     {
         Type a_type = typeprop.get(ctx.expression(0));
@@ -484,24 +414,24 @@ public class PhaseCheck extends miniJavaBaseListener
 
     public void exitGetArrayValue(miniJavaParser.GetArrayValueContext ctx)
     {
-         Type var_type = typeprop.get(ctx.expression(0));
-         Type id_type = typeprop.get(ctx.expression(1));  //  f[s]  f is expression(0) and s is expression(1)
-         if (id_type != Type.jInt)
-         {
-             basic.PrintError(ctx.getStart(), " Requires the index of array to be int but got " + id_type);
-             basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
-             typeprop.put(ctx, Type.jVoid);
-         }
+        Type var_type = typeprop.get(ctx.expression(0));
+        Type id_type = typeprop.get(ctx.expression(1));  //  f[s]  f is expression(0) and s is expression(1)
+        if (id_type != Type.jInt)
+        {
+            basic.PrintError(ctx.getStart(), " Requires the index of array to be int but got " + id_type);
+            basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
+            typeprop.put(ctx, Type.jVoid);
+        }
         if (var_type != Type.jArray)
-         {
-             basic.PrintError(ctx.getStart(), " Requires it to be an array but got" + var_type);
-             basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
-             typeprop.put(ctx, Type.jVoid);
-         }
-         else
-         {
-             typeprop.put(ctx, Type.jInt);
-         }
+        {
+            basic.PrintError(ctx.getStart(), " Requires it to be an array but got" + var_type);
+            basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
+            typeprop.put(ctx, Type.jVoid);
+        }
+        else
+        {
+            typeprop.put(ctx, Type.jInt);
+        }
     }
 
     public void exitGetLength(miniJavaParser.GetLengthContext ctx)
@@ -517,5 +447,112 @@ public class PhaseCheck extends miniJavaBaseListener
         {
             typeprop.put(ctx, Type.jInt);
         }
+    }
+
+
+    public void exitBoolTrue(miniJavaParser.BoolTrueContext ctx)
+    {
+        typeprop.put(ctx, Type.jBool);
+    }
+
+    public void exitBoolFalse(miniJavaParser.BoolFalseContext ctx)
+    {
+        typeprop.put(ctx, Type.jBool);
+    }
+
+    public void exitVarOfExpression(miniJavaParser.VarOfExpressionContext ctx)
+    {
+        int start = ctx.start.getStartIndex();
+        int stop = ctx.start.getStopIndex();
+        String var_name = ctx.start.getInputStream().toString().substring(start, stop + 1);
+
+        Type var_find = currentvarSet.get(var_name);
+        boolean class_find = classSet.contains(var_name);
+        if (var_find == null && !class_find)    // the variable need to be defined does not exist right now
+        {
+            basic.PrintError(ctx.getStart(), " The variable you just used in the code " + var_name  + " is not a variable or a class right now!");
+            basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
+        }
+        else if (var_find != null)
+        {
+            typeprop.put(ctx, var_find);
+        }
+        else if (class_find)
+        {
+            typeprop.put(ctx, Type.jClass);
+        }
+    }
+
+    public void exitThis(miniJavaParser.ThisContext ctx)
+    {
+        typeprop.put(ctx, Type.jClass); //this is a class
+    }
+
+    public void exitNewIntArray(miniJavaParser.NewIntArrayContext ctx)
+    {
+        Type t_type = typeprop.get(ctx.expression());
+        if (t_type != Type.jInt)
+        {
+            basic.PrintError(ctx.getStart(), " new int [num] num should be a integer but got " + t_type);
+            basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
+        }
+        else
+        {
+            typeprop.put(ctx, Type.jArray);
+        }
+    }
+
+    public void exitNewClass(miniJavaParser.NewClassContext ctx)
+    {
+        String identifier_name = ctx.identifier().getText();
+        boolean class_find = classSet.contains(identifier_name);
+        if (!class_find)
+        {
+            basic.PrintError(ctx.getStart(), "The Class " + identifier_name + " you want to new is not a class");
+            basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
+        }
+        else
+        {
+            typeprop.put(ctx, Type.jClass);
+        }
+    }
+
+    public void exitNegative(miniJavaParser.NegativeContext ctx)
+    {
+        Type t_expression = typeprop.get(ctx.expression());
+        if ( t_expression == Type.jBool)
+        {
+            typeprop.put(ctx, Type.jBool);
+        }
+        else
+        {
+            basic.PrintError(ctx.getStart(), " The expression you want to negate is not a boolean but a " +  t_expression);
+            basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
+            typeprop.put(ctx, Type.jVoid);
+        }
+    }
+
+    public void exitBracketpair(miniJavaParser.BracketpairContext ctx)
+    {
+        Type t_expression = typeprop.get(ctx.expression());
+        if (t_expression == Type.jVoid)
+        {
+            basic.PrintError(ctx.getStart(), " The expression you want to add bracket pairs is not valid" );
+            basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
+        }
+        else
+        {
+            typeprop.put(ctx, t_expression);
+        }
+    }
+
+    public void exitIntValueOfExpression(miniJavaParser.IntValueOfExpressionContext ctx)   // INT in the expression
+    {
+        typeprop.put(ctx, Type.jInt);
+    }
+
+    public void exitStringValueOfExpression(miniJavaParser.StringValueOfExpressionContext ctx)
+    {
+        typeprop.put(ctx, Type.jString);
     }
 }
