@@ -1,18 +1,11 @@
-import com.intellij.vcs.log.Hash;
-import com.sun.deploy.security.ValidationState;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 import java.util.*;
-import org.antlr.v4.runtime.Token;
 import java.util.HashMap;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 
 public class PhaseCheck extends miniJavaBaseListener
 {
-    ParseTreeProperty<Scope> scopes;
-    GlobalScope globals;
-    Scope currentScope;
-
     ParseTreeProperty<Type> typeprop = new ParseTreeProperty<Type>();
     ParseTreeProperty<String> classnameprop = new ParseTreeProperty<String>();
     int now_scope = 0;
@@ -25,10 +18,8 @@ public class PhaseCheck extends miniJavaBaseListener
     Table<String, String, HashMap<Integer, String>> method_argument_classes = HashBasedTable.create();   //class of arguments
     String current_class_name = "";   //the name of current class    this means it
 
-    public PhaseCheck(GlobalScope globals, ParseTreeProperty<Scope> scopes)
+    public PhaseCheck()
     {
-        this.scopes = scopes;
-        this.globals = globals;
         //key word which cannot be used as argument reserved word
         currentvarSet.put("class", Type.jVoid); currentvarSet.put("public", Type.jVoid); currentvarSet.put("static", Type.jVoid); currentvarSet.put("void", Type.jVoid);
         currentvarSet.put("main", Type.jVoid); currentvarSet.put("String", Type.jVoid); currentvarSet.put("extends", Type.jVoid); currentvarSet.put("return", Type.jVoid);
@@ -41,11 +32,6 @@ public class PhaseCheck extends miniJavaBaseListener
         classSet.add("int"); classSet.add("int []"); classSet.add("boolean"); classSet.add("if");
         classSet.add("while"); classSet.add("true"); classSet.add("false"); classSet.add("this");
         classSet.add("new"); classSet.add("length"); classSet.add("else");
-    }
-
-    public void enterGoal(miniJavaParser.GoalContext ctx)
-    {
-        currentScope = globals;
     }
 
     public Type findType(String type_name)

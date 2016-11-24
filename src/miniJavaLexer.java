@@ -242,5 +242,4 @@ public class miniJavaLexer extends Lexer {
 			}
 		}
 	}
-
 }

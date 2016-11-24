@@ -28,6 +28,4 @@ public class ErrorStrategy extends DefaultErrorStrategy
         String msg = "Input Mismatch :";
         recognizer.notifyErrorListeners(e.getOffendingToken(), msg, e);
     }
-
-
 }

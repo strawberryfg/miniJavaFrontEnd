@@ -22,9 +22,7 @@ public class wqfminiJavaCompilerFrontEnd
 
         ParseTree tree = parser.goal();
         ParseTreeWalker walker = new ParseTreeWalker();
-        PhaseDefine def = new PhaseDefine();
-        walker.walk(def, tree);
-        PhaseCheck ref = new PhaseCheck(def.globals, def.scopes);
+        PhaseCheck ref = new PhaseCheck();
         walker.walk(ref, tree);    //Error Reporting and Recovering
 
         JFrame frame = new JFrame("Abstract Syntax Tree GUI(By Qingfu Wan)");
