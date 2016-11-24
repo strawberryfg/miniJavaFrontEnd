@@ -39,9 +39,9 @@ statement
     ;
 
 extendexp
-    :expression
-    |expression ')' {notifyErrorListeners("too many ')'");}
-    |'(' expression {notifyErrorListeners("too many '('");}
+    :expression                                                   #SingleExpression
+    |expression ')' {notifyErrorListeners("too many ')'");}       #ExpressionRightbrace
+    |'(' expression {notifyErrorListeners("too many '('");}       #LeftbraceExpression
     ;
 
 expression

@@ -195,13 +195,37 @@ public class miniJavaBaseListener implements miniJavaListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterExtendexp(miniJavaParser.ExtendexpContext ctx) { }
+	@Override public void enterSingleExpression(miniJavaParser.SingleExpressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitExtendexp(miniJavaParser.ExtendexpContext ctx) { }
+	@Override public void exitSingleExpression(miniJavaParser.SingleExpressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterExpressionRightbrace(miniJavaParser.ExpressionRightbraceContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExpressionRightbrace(miniJavaParser.ExpressionRightbraceContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterLeftbraceExpression(miniJavaParser.LeftbraceExpressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitLeftbraceExpression(miniJavaParser.LeftbraceExpressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

@@ -46,6 +46,9 @@ public class basic {
             "    Tree right;\n" +
             "    int key ;\n" +
             "\tint Tree;\n" +
+            "\tint f;\n" +
+            "\tboolean b;\n" +
+            "\t\n" +
             "    boolean has_left ;\n" +
             "    boolean has_right ;\n" +
             "    Tree my_null ;\n" +
@@ -54,6 +57,7 @@ public class basic {
             "    public boolean Init(int v_key){\n" +
             "    key = v_key ;\n" +
             "\tkey = \"fs\";\n" +
+            "\tf = new int [3 + b];\n" +
             "    has_left = false ;\n" +
             "    has_right = false ;\n" +
             "    return true ;\n" +

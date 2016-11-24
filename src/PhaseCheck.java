@@ -6,6 +6,9 @@ import java.util.HashMap;
 public class PhaseCheck extends miniJavaBaseListener
 {
     ParseTreeProperty<Scope> scopes;
+
+
+
     GlobalScope globals;
     Scope currentScope;
 
@@ -127,7 +130,29 @@ public class PhaseCheck extends miniJavaBaseListener
         }
     }
 
+    public void exitAssign(miniJavaParser.AssignContext ctx)
+    {
 
+    }
+
+    public void exitNewIntArray(miniJavaParser.NewIntArrayContext ctx)
+    {
+        Type t_type = typeprop.get(ctx.expression());
+        if (t_type != Type.jInt)
+        {
+            basic.PrintError(ctx.getStart(), " new int [num] num should be a integer but got " + t_type);
+            basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
+        }
+        else
+        {
+            typeprop.put(ctx, Type.jArray);
+        }
+    }
+
+    public void exitSingleExpression(miniJavaParser.SingleExpressionContext ctx)
+    {
+        typeprop.put(ctx,typeprop.get(ctx.expression()));
+    }
 
     public void exitVarOfExpression(miniJavaParser.VarOfExpressionContext ctx)
     {
@@ -141,6 +166,14 @@ public class PhaseCheck extends miniJavaBaseListener
         {
             basic.PrintError(ctx.getStart(), " The variable you just used in the code " + var_name  + " is not a variable or a class right now!");
             basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
+        }
+        else if (var_find != null)
+        {
+            typeprop.put(ctx, var_find);
+        }
+        else if (class_find)
+        {
+            typeprop.put(ctx, Type.jClass);
         }
     }
 
@@ -236,10 +269,7 @@ public class PhaseCheck extends miniJavaBaseListener
         typeprop.put(ctx, Type.jBool);
     }
 
-    public void exitBoolFalse(miniJavaParser.BoolTrueContext ctx)
-    {
-        typeprop.put(ctx, Type.jBool);
-    }
+    public void exitBoolFalse(miniJavaParser.BoolFalseContext ctx) { typeprop.put(ctx, Type.jBool); }
 
     public void exitAnd(miniJavaParser.AndContext ctx)   //a && b  a and b should be both boolean
     {
@@ -315,7 +345,7 @@ public class PhaseCheck extends miniJavaBaseListener
              basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
              typeprop.put(ctx, Type.jVoid);
          }
-         else if (var_type != Type.jArray)
+        if (var_type != Type.jArray)
          {
              basic.PrintError(ctx.getStart(), " Requires it to be an array but got" + var_type);
              basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());

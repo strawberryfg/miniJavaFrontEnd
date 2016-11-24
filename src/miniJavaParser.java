@@ -907,20 +907,56 @@ public class miniJavaParser extends Parser {
 	}
 
 	public static class ExtendexpContext extends ParserRuleContext {
-		public ExpressionContext expression() {
-			return getRuleContext(ExpressionContext.class,0);
-		}
 		public ExtendexpContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_extendexp; }
+	 
+		public ExtendexpContext() { }
+		public void copyFrom(ExtendexpContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	public static class SingleExpressionContext extends ExtendexpContext {
+		public ExpressionContext expression() {
+			return getRuleContext(ExpressionContext.class,0);
+		}
+		public SingleExpressionContext(ExtendexpContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof miniJavaListener ) ((miniJavaListener)listener).enterExtendexp(this);
+			if ( listener instanceof miniJavaListener ) ((miniJavaListener)listener).enterSingleExpression(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof miniJavaListener ) ((miniJavaListener)listener).exitExtendexp(this);
+			if ( listener instanceof miniJavaListener ) ((miniJavaListener)listener).exitSingleExpression(this);
+		}
+	}
+	public static class LeftbraceExpressionContext extends ExtendexpContext {
+		public ExpressionContext expression() {
+			return getRuleContext(ExpressionContext.class,0);
+		}
+		public LeftbraceExpressionContext(ExtendexpContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof miniJavaListener ) ((miniJavaListener)listener).enterLeftbraceExpression(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof miniJavaListener ) ((miniJavaListener)listener).exitLeftbraceExpression(this);
+		}
+	}
+	public static class ExpressionRightbraceContext extends ExtendexpContext {
+		public ExpressionContext expression() {
+			return getRuleContext(ExpressionContext.class,0);
+		}
+		public ExpressionRightbraceContext(ExtendexpContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof miniJavaListener ) ((miniJavaListener)listener).enterExpressionRightbrace(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof miniJavaListener ) ((miniJavaListener)listener).exitExpressionRightbrace(this);
 		}
 	}
 
@@ -932,6 +968,7 @@ public class miniJavaParser extends Parser {
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,11,_ctx) ) {
 			case 1:
+				_localctx = new SingleExpressionContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(156);
@@ -939,6 +976,7 @@ public class miniJavaParser extends Parser {
 				}
 				break;
 			case 2:
+				_localctx = new ExpressionRightbraceContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(157);
@@ -949,6 +987,7 @@ public class miniJavaParser extends Parser {
 				}
 				break;
 			case 3:
+				_localctx = new LeftbraceExpressionContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
 				setState(161);

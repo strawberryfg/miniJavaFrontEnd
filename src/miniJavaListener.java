@@ -183,15 +183,41 @@ public interface miniJavaListener extends ParseTreeListener {
 	 */
 	void exitArrayValueAssign(miniJavaParser.ArrayValueAssignContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link miniJavaParser#extendexp}.
+	 * Enter a parse tree produced by the {@code SingleExpression}
+	 * labeled alternative in {@link miniJavaParser#extendexp}.
 	 * @param ctx the parse tree
 	 */
-	void enterExtendexp(miniJavaParser.ExtendexpContext ctx);
+	void enterSingleExpression(miniJavaParser.SingleExpressionContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link miniJavaParser#extendexp}.
+	 * Exit a parse tree produced by the {@code SingleExpression}
+	 * labeled alternative in {@link miniJavaParser#extendexp}.
 	 * @param ctx the parse tree
 	 */
-	void exitExtendexp(miniJavaParser.ExtendexpContext ctx);
+	void exitSingleExpression(miniJavaParser.SingleExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code ExpressionRightbrace}
+	 * labeled alternative in {@link miniJavaParser#extendexp}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpressionRightbrace(miniJavaParser.ExpressionRightbraceContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code ExpressionRightbrace}
+	 * labeled alternative in {@link miniJavaParser#extendexp}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpressionRightbrace(miniJavaParser.ExpressionRightbraceContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code LeftbraceExpression}
+	 * labeled alternative in {@link miniJavaParser#extendexp}.
+	 * @param ctx the parse tree
+	 */
+	void enterLeftbraceExpression(miniJavaParser.LeftbraceExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code LeftbraceExpression}
+	 * labeled alternative in {@link miniJavaParser#extendexp}.
+	 * @param ctx the parse tree
+	 */
+	void exitLeftbraceExpression(miniJavaParser.LeftbraceExpressionContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code VarOfExpression}
 	 * labeled alternative in {@link miniJavaParser#expression}.
