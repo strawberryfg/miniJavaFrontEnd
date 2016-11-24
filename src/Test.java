@@ -15,13 +15,15 @@ public class Test {
         //prepare token stream
         CharStream stream = new ANTLRInputStream(basic.test_string);
 
-        try
+        //try
         {
             miniJavaLexer lexer  = new miniJavaLexer(stream);
             TokenStream tokenStream = new CommonTokenStream(lexer);
             miniJavaParser parser = new miniJavaParser(tokenStream);
             parser.removeErrorListeners();
-            //parser.addErrorListener(new test_listener.UnderlineListener());
+            parser.addErrorListener(new test_listener.UnderlineListener());
+            //parser.setErrorHandler(new ErrorStrategy());
+
             ParseTree tree = parser.goal();
 
             ParseTreeWalker walker = new ParseTreeWalker();
@@ -44,10 +46,10 @@ public class Test {
             frame.setVisible(true);
 
         }
-        catch (RecognitionException ex)
+        /*catch (RuntimeException ex)
         {
-            System.out.print("fsd");
-        }
+            System.out.print(ex.getMessage());
+        }*/
 
 
 

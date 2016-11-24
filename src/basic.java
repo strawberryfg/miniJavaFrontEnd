@@ -40,14 +40,16 @@ public class basic {
             "    System.out.println(new BT().Start());\n" +
             "\t\n" +
             "    }\n" +
+            "\tint return;\n" +
             "    int f;\t\n" +
             "\tf = 3;\n" +
             "}\n" +
-            "class Tree{\n" +
+            " class Tree{\n" +
             "    Tree left ;\n" +
             "    Tree right;\n" +
             "\tTree tmp;\n" +
             "    int key ;\n" +
+            "\tint 8989key;\n" +
             "\tint Tree;\n" +
             "\tint return;\n" +
             "\tString String;\n" +

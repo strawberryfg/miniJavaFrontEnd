@@ -209,4 +209,15 @@ public class miniJavaLexer extends Lexer {
 			_decisionToDFA[i] = new DFA(_ATN.getDecisionState(i), i);
 		}
 	}
+
+	public void notifyListeners(LexerNoViableAltException e) {
+		String text = _input.getText(Interval.of(_tokenStartCharIndex, _input.index()));
+		String msg = "token recognition error at: '"+ getErrorDisplay(text) + "'";
+
+		ANTLRErrorListener listener = getErrorListenerDispatch();
+		System.err.println("Lexical Error:");
+		listener.syntaxError(this, null, _tokenStartLine, _tokenStartCharPositionInLine, msg, e);
+		System.err.println();
+	}
+
 }

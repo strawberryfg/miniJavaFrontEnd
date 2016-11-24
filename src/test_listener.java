@@ -11,11 +11,11 @@ public class test_listener {
                                 int line, int charPositionInLine,
                                 String msg,
                                 RecognitionException e) {
+            System.err.println("Syntax Error:");
             System.err.println("line "+line+":"+charPositionInLine+" "+msg);
             basic.underlineError(recognizer,(Token)offendingSymbol,
                     line, charPositionInLine);
-            String f=e.toString();
-            System.err.println("It's a syntax error!\n");
+
         }
 
 
