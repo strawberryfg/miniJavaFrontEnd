@@ -1,13 +1,14 @@
 import org.antlr.v4.runtime.*;
-public class ErrorStrategy extends DefaultErrorStrategy
+import org.antlr.v4.runtime.misc.IntervalSet;
+
+public class ErrorStrategyParser extends DefaultErrorStrategy
 {
+
     @Override
     public void recover(Parser recognizer, RecognitionException e)
     {
         throw new RuntimeException(e);
     }
-
-
 
 
     @Override
@@ -30,4 +31,6 @@ public class ErrorStrategy extends DefaultErrorStrategy
         String msg = "Input Mismatch :";
         recognizer.notifyErrorListeners(e.getOffendingToken(), msg, e);
     }
+
+
 }
