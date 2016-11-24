@@ -12,6 +12,4 @@ public class PhaseDefine extends miniJavaBaseListener{
         globals = new GlobalScope(null);
         currentScope = globals;
     }
-
-
 }

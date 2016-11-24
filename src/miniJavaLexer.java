@@ -1,4 +1,5 @@
 // Generated from miniJava.g4 by ANTLR 4.5.3
+import com.intellij.util.xml.Convert;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Token;
@@ -68,6 +69,9 @@ public class miniJavaLexer extends Lexer {
 			}
 		}
 	}
+
+
+
 
 	@Override
 	@Deprecated
@@ -210,6 +214,8 @@ public class miniJavaLexer extends Lexer {
 		}
 	}
 
+	//important modifications to original version notify Lexical Error
+	@Override
 	public void notifyListeners(LexerNoViableAltException e) {
 		String text = _input.getText(Interval.of(_tokenStartCharIndex, _input.index()));
 		String msg = "token recognition error at: '"+ getErrorDisplay(text) + "'";
@@ -218,6 +224,23 @@ public class miniJavaLexer extends Lexer {
 		System.err.println("Lexical Error:");
 		listener.syntaxError(this, null, _tokenStartLine, _tokenStartCharPositionInLine, msg, e);
 		System.err.println();
+	}
+
+	@Override
+	public void recover(LexerNoViableAltException e)
+	{
+		if (basic.bail())   // bail out of the parser upon the first lexical error
+		{
+			throw new RuntimeException(e);
+		}
+		else
+		{
+			if (_input.LA(1) != IntStream.EOF)
+			{
+				// skip a char and try again
+				getInterpreter().consume(_input);
+			}
+		}
 	}
 
 }

@@ -16,20 +16,6 @@ public class PhaseCheck extends miniJavaBaseListener
     ParseTreeProperty<Type> typeprop = new ParseTreeProperty<Type>();
     ParseTreeProperty<String> classnameprop = new ParseTreeProperty<String>();
     int now_scope = 0;
-    public class class_method_pair
-    {
-         String class_name;
-         String method_name;
-         public class_method_pair(String s, String t)
-         {
-             class_name = s;
-             method_name = t;
-         }
-         public class_method_pair()
-         {
-
-         }
-    }
     HashMap<String, Type> currentvarSet = new HashMap<String, Type>();   //each variable has an unique
     HashMap<String, Integer> varScope = new HashMap<String, Integer>();
     HashSet<String> classSet = new HashSet<String>();
@@ -37,9 +23,6 @@ public class PhaseCheck extends miniJavaBaseListener
     HashMap<String, String> classInstanceSet = new HashMap<String, String>();   // the set of instances of classes
     Table<String, String, HashMap<Integer, Type>> method_arguments = HashBasedTable.create();
     Table<String, String, HashMap<Integer, String>> method_argument_classes = HashBasedTable.create();   //class of arguments
-
-
-    //HashMap<class_method_pair, HashMap<Integer, Type> > method_arguments = new HashMap<class_method_pair, HashMap<Integer, Type>>(); //integer stands for the index of the arguemnt list
     String current_class_name = "";   //the name of current class    this means it
 
     public PhaseCheck(GlobalScope globals, ParseTreeProperty<Scope> scopes)
