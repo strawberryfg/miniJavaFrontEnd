@@ -130,9 +130,30 @@ public class PhaseCheck extends miniJavaBaseListener
         }
     }
 
-    public void exitAssign(miniJavaParser.AssignContext ctx)
+    public void exitThis(miniJavaParser.ThisContext ctx)
     {
+        typeprop.put(ctx, Type.jClass); //this is a class
+    }
 
+    public void exitAssign(miniJavaParser.AssignContext ctx)   //assign a value to a variable
+    {
+        String identifier_name = ctx.identifier().getText();
+        Type var_find = currentvarSet.get(identifier_name);
+        boolean class_find = classSet.contains(identifier_name);
+        if (var_find == null && !class_find)
+        {
+            basic.PrintError(ctx.getStart(), "The left value of assign operation " + identifier_name + " is not a variable nor a class");
+            basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
+        }
+        else
+        {
+            Type t_extended = typeprop.get(ctx.extendexp());
+            if (var_find != t_extended)   //mismatch type
+            {
+                basic.PrintError(ctx.getStart(), "Type mismatch, the desired type should be " + var_find + " while the type of extendedexp is " + t_extended);
+                basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
+            }
+        }
     }
 
     public void exitNewIntArray(miniJavaParser.NewIntArrayContext ctx)

@@ -50,7 +50,7 @@ expression
         | expression '.' identifier '(' ( expression ( ',' expression )* )? ')'     #CallFunction
         
         
-        | 'this'                                                                    #This
+        
         
         | 'new' identifier '(' ')'                                                  #NewClass
         | '!' expression                                                            #Negative

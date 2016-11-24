@@ -38,24 +38,20 @@ statement
 	|identifier '[' extendexp ']' '=' extendexp ';'                #ArrayValueAssign
     ;
 
-extendexp
-    :expression                                                   #SingleExpression
-    |expression ')' {notifyErrorListeners("too many ')'");}       #ExpressionRightbrace
-    |'(' expression {notifyErrorListeners("too many '('");}       #LeftbraceExpression
-    ;
+
+
 
 expression
-    :     expression '&&' expression                                                #And
-	    | expression '<' expression                                                 #Lessthan
-        | expression ('*'|'/') expression                                           #MulDivide
-        | expression ('+'|'-') expression                                           #AddSub
-        | expression '[' expression ']'                                             #GetArrayValue
-        | expression '.' 'length'                                                   #GetLength
+    :    
+	    
+        
+        
+        
         | expression '.' identifier '(' ( expression ( ',' expression )* )? ')'     #CallFunction
         
         
         | 'this'                                                                    #This
-        | 'new' 'int' '[' expression ']'                                            #NewIntArray
+        
         | 'new' identifier '(' ')'                                                  #NewClass
         | '!' expression                                                            #Negative
         | '(' expression ')'                                                        #Bracketpair

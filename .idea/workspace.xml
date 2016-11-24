@@ -60,14 +60,16 @@
       <file leaf-file-name="PhaseCheck.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/PhaseCheck.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="173">
-              <caret line="271" column="100" selection-start-line="271" selection-start-column="100" selection-end-line="271" selection-end-column="100" />
+            <state relative-caret-position="202">
+              <caret line="184" column="57" selection-start-line="184" selection-start-column="57" selection-end-line="184" selection-end-column="57" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#339#345#0" expanded="true" />
                 <element signature="e#670#684#0" expanded="true" />
                 <element signature="e#777#794#0" expanded="true" />
                 <element signature="e#840#848#0" expanded="true" />
+                <element signature="e#5288#5289#0" expanded="true" />
+                <element signature="e#5352#5353#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -638,7 +640,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1382" height="744" extended-state="7" />
+    <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -706,13 +708,12 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="87" />
+      <option name="time" value="88" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="Application">
-        <watch expression="ctx.getChild(1)" language="JAVA" />
-        <watch expression="currentvarSet" language="JAVA" />
-        <watch expression="typeprop.get(ctx.expression())" language="JAVA" />
+        <watch expression="typeprop.get(ctx.extendexp())" language="JAVA" />
+        <watch expression="var_find" language="JAVA" />
       </configuration>
     </watches-manager>
   </component>
@@ -873,6 +874,8 @@
             <element signature="e#670#684#0" expanded="true" />
             <element signature="e#777#794#0" expanded="true" />
             <element signature="e#840#848#0" expanded="true" />
+            <element signature="e#5288#5289#0" expanded="true" />
+            <element signature="e#5352#5353#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1619,14 +1622,16 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/PhaseCheck.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="173">
-          <caret line="271" column="100" selection-start-line="271" selection-start-column="100" selection-end-line="271" selection-end-column="100" />
+        <state relative-caret-position="202">
+          <caret line="184" column="57" selection-start-line="184" selection-start-column="57" selection-end-line="184" selection-end-column="57" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#339#345#0" expanded="true" />
             <element signature="e#670#684#0" expanded="true" />
             <element signature="e#777#794#0" expanded="true" />
             <element signature="e#840#848#0" expanded="true" />
+            <element signature="e#5288#5289#0" expanded="true" />
+            <element signature="e#5352#5353#0" expanded="true" />
           </folding>
         </state>
       </provider>
