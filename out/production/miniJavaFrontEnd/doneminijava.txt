@@ -34,7 +34,7 @@ statement
 	|'if' '(' extendexp ')' statement 'else' statement             #Ifelse
 	|'while' '(' extendexp ')' statement                           #While
 	|'System.out.println' '(' extendexp ')' ';'                    #Println	
-	|identifier '=' extendexp ';'                                  #Assign
+	
 	|identifier '[' extendexp ']' '=' extendexp ';'                #ArrayValueAssign
     ;
 
@@ -50,11 +50,11 @@ expression
         | expression '.' identifier '(' ( expression ( ',' expression )* )? ')'     #CallFunction
         
         
-        | 'this'                                                                    #This
         
-        | 'new' identifier '(' ')'                                                  #NewClass
-        | '!' expression                                                            #Negative
-        | '(' expression ')'                                                        #Bracketpair
+        
+        
+        
+        
         
         ;
 

@@ -22,20 +22,14 @@ methodDeclaration
     '(' ( type identifier ( ',' type identifier )* )? ')' '{' ( varDeclaration )* ( statement )* 'return' extendexp ';' '}'   #Method
 	;
 
-type
-    : 'int' '['']'                                                 #IntegerArray
-    |'boolean'                                                     #Boolean
-	|'int'                                                         #Integer
-	|identifier                                                    #Instance
-	;                                                  
+                                          
 
 statement
     : '{' ( statement )* '}'                                       #BracesOfStatement
 	|'if' '(' extendexp ')' statement 'else' statement             #Ifelse
 	|'while' '(' extendexp ')' statement                           #While
 	|'System.out.println' '(' extendexp ')' ';'                    #Println	
-	|identifier '=' extendexp ';'                                  #Assign
-	|identifier '[' extendexp ']' '=' extendexp ';'                #ArrayValueAssign
+		
     ;
 
 
@@ -52,9 +46,9 @@ expression
         
         
         
-        | 'new' identifier '(' ')'                                                  #NewClass
-        | '!' expression                                                            #Negative
-        | '(' expression ')'                                                        #Bracketpair
+        
+        
+        
         
         ;
 

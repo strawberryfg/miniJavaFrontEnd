@@ -44,6 +44,7 @@ public class basic {
             "class Tree{\n" +
             "    Tree left ;\n" +
             "    Tree right;\n" +
+            "\tTree tmp;\n" +
             "    int key ;\n" +
             "\tint Tree;\n" +
             "\tint f;\n" +
@@ -57,15 +58,31 @@ public class basic {
             "    public boolean Init(int v_key){\n" +
             "    key = v_key ;\n" +
             "\tkey = \"fs\";\n" +
-            "\tf = new int [3 + b];\n" +
+            "\tf = new int [3 + b];\t\n" +
+            "\tb = 3;\n" +
             "    has_left = false ;\n" +
             "    has_right = false ;\n" +
+            "\ttmp = new F();\n" +
             "    return true ;\n" +
             "    }\n" +
             "\n" +
             "    // Update the right child with rn\n" +
             "    public boolean SetRight(Tree rn){\n" +
-            "    right = rn ;\n" +
+            "\tif (!f)\n" +
+            "\t{\n" +
+            "\t    b = true;\n" +
+            "\t}\n" +
+            "\telse \n" +
+            "\t{   \n" +
+            "\t   if ((!f))\n" +
+            "\t   {\n" +
+            "\t       has_right = false;\n" +
+            "\t   }\n" +
+            "\t   else\n" +
+            "\t   {\n" +
+            "\t       right = rn ;      \n" +
+            "\t   }\t   \n" +
+            "\t}\n" +
             "    return true ;\n" +
             "    }\n" +
             "    \n" +
@@ -349,7 +366,12 @@ public class basic {
             "    Tree root ;\n" +
             "    boolean ntb ;\n" +
             "    int nti ;\n" +
-            "\n" +
+            "\tint a;\n" +
+            "\tint b;\n" +
+            "\tint c;\n" +
+            "    int [] wqf;\n" +
+            "\t\n" +
+            "\t\n" +
             "    root = new Tree();\n" +
             "    ntb = root.Init(16);\n" +
             "    ntb = root.Print();\n" +
@@ -363,6 +385,10 @@ public class basic {
             "    ntb = root.Insert(28) ;\n" +
             "    ntb = root.Insert(14) ;\n" +
             "    ntb = root.Print();\n" +
+            "\twqf = new int [( (a + b * 5) / 3)];\n" +
+            "\twqf[ntb] = \"s\";\n" +
+            "\twqf[3] = 'fds';\n" +
+            "\twqf[2] = c;\n" +
             "    System.out.println(root.Search(24));\n" +
             "    System.out.println(root.Search(12));\n" +
             "    System.out.println(root.Search(16));\n" +

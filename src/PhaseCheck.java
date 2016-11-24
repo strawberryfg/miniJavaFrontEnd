@@ -56,7 +56,7 @@ public class PhaseCheck extends miniJavaBaseListener
                 return Type.jBool;
         }
         if (classSet.contains(type_name)) return Type.jClass;
-        return Type.jNil;   // not a class or any type
+        return Type.jVoid;   // not a class or any type
     }
 
 
@@ -80,7 +80,7 @@ public class PhaseCheck extends miniJavaBaseListener
             else
             {
                 Type t_find = findType(type_name);
-                if (t_find != Type.jNil) // int boolean or class
+                if (t_find != Type.jVoid) // int boolean or class
                 {
                     currentvarSet.put(identifer_name, t_find);
                     vardeclareTime.put(identifer_name, now_scope);    //add the argument of the method to the var set
@@ -104,7 +104,7 @@ public class PhaseCheck extends miniJavaBaseListener
                 if (vardeclareTime.get(identifer_name) == now_scope)  //it is declared in this scope
                 {
                     Type t_find = findType(type_name);
-                    if (t_find != Type.jNil)
+                    if (t_find != Type.jVoid)
                     {
                         if (currentvarSet.get(identifer_name)  != null) currentvarSet.remove(identifer_name);   //remove it from the method
                     }
@@ -121,7 +121,7 @@ public class PhaseCheck extends miniJavaBaseListener
                 if (vardeclareTime.get(identifer_name) == now_scope)  //it is declared in this scope
                 {
                     Type t_find = findType(type_name);
-                    if (t_find != Type.jNil)
+                    if (t_find != Type.jVoid)
                     {
                         if (currentvarSet.get(identifer_name)  != null) currentvarSet.remove(identifer_name);   //remove it from the method
                     }
@@ -145,14 +145,49 @@ public class PhaseCheck extends miniJavaBaseListener
             basic.PrintError(ctx.getStart(), "The left value of assign operation " + identifier_name + " is not a variable nor a class");
             basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
         }
+        Type t_extended = typeprop.get(ctx.extendexp());
+        if (var_find != t_extended)   //mismatch type
+        {
+            basic.PrintError(ctx.getStart(), "Type mismatch, the desired type should be " + var_find + " while the type of extendedexp is " + t_extended);
+            basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
+        }
+    }
+
+    public void exitArrayValueAssign(miniJavaParser.ArrayValueAssignContext ctx)
+    {
+        String identifier_name = ctx.identifier().getText();
+        Type var_find = currentvarSet.get(identifier_name);
+        if (var_find != Type.jArray)
+        {
+            basic.PrintError(ctx.getStart(), "The left value of assign operation " + identifier_name + " is not an array");
+            basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
+        }
+        Type t_index = typeprop.get(ctx.extendexp(0));
+        if (t_index != Type.jInt)
+        {
+            basic.PrintError(ctx.getStart(), "The index of the array is not an integer");
+            basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
+        }
+        Type t_value = typeprop.get(ctx.extendexp(1));
+        if (t_value != Type.jInt)
+        {
+            basic.PrintError(ctx.getStart(), "The assigned value is not an integer");
+            basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
+        }
+    }
+
+    public void exitNewClass(miniJavaParser.NewClassContext ctx)
+    {
+        String identifier_name = ctx.identifier().getText();
+        boolean class_find = classSet.contains(identifier_name);
+        if (!class_find)
+        {
+            basic.PrintError(ctx.getStart(), "The Class " + identifier_name + " you want to new is not a class");
+            basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
+        }
         else
         {
-            Type t_extended = typeprop.get(ctx.extendexp());
-            if (var_find != t_extended)   //mismatch type
-            {
-                basic.PrintError(ctx.getStart(), "Type mismatch, the desired type should be " + var_find + " while the type of extendedexp is " + t_extended);
-                basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
-            }
+            typeprop.put(ctx, Type.jClass);
         }
     }
 
@@ -173,6 +208,35 @@ public class PhaseCheck extends miniJavaBaseListener
     public void exitSingleExpression(miniJavaParser.SingleExpressionContext ctx)
     {
         typeprop.put(ctx,typeprop.get(ctx.expression()));
+    }
+
+    public void exitBracketpair(miniJavaParser.BracketpairContext ctx)
+    {
+        Type t_expression = typeprop.get(ctx.expression());
+        if (t_expression == Type.jVoid)
+        {
+            basic.PrintError(ctx.getStart(), " The expression you want to add bracket pairs is not valid" );
+            basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
+        }
+        else
+        {
+            typeprop.put(ctx, t_expression);
+        }
+    }
+
+    public void exitNegative(miniJavaParser.NegativeContext ctx)
+    {
+        Type t_expression = typeprop.get(ctx.expression());
+        if ( t_expression == Type.jBool)
+        {
+            typeprop.put(ctx, Type.jBool);
+        }
+        else
+        {
+            basic.PrintError(ctx.getStart(), " The expression you want to negate is not a boolean but a " +  t_expression);
+            basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
+            typeprop.put(ctx, Type.jVoid);
+        }
     }
 
     public void exitVarOfExpression(miniJavaParser.VarOfExpressionContext ctx)
@@ -224,8 +288,9 @@ public class PhaseCheck extends miniJavaBaseListener
         {
             classSet.add(class_name);
         }
-
     }
+
+
 
     public void exitIntValueOfExpression(miniJavaParser.IntValueOfExpressionContext ctx)   // INT in the expression
     {
