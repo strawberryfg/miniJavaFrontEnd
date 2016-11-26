@@ -9,7 +9,11 @@ Usage:
 
 3. Build the project and Run
 
+
+
 Configurations:
+
+
 
 bail_or_not.in :   
 
@@ -17,6 +21,8 @@ bail_or_not.in :
 
    "true":    pause parsing upon the first lexical(syntax) error
 
+   
+   
 file_path.in :
 
    src/input/origin.in    no bail out
@@ -25,6 +31,8 @@ file_path.in :
 
    src/input/noalter.in   bail out case 2
 
+   
+   
 The code uses a google standard HashBasedTable to save triplets into a table, so potention build error may 
 
 result from the following two instructions:
