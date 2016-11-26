@@ -1,4 +1,7 @@
-.idea/*
-out/*
-resources/*
 *.class
+
+.idea/*
+
+out/*
+
+resources/*

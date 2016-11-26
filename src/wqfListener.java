@@ -16,7 +16,7 @@ public class wqfListener
                     line, charPositionInLine);
         }
     }
-    public void main(String[] args) throws Exception
+    /*public void main(String[] args) throws Exception
     {
         ANTLRInputStream input = new ANTLRInputStream(System.in);
         miniJavaLexer lexer = new miniJavaLexer(input);
@@ -25,5 +25,5 @@ public class wqfListener
         parser.removeErrorListeners(); // remove ConsoleErrorListener
         parser.addErrorListener(new UnderlineListener());
         parser.goal();
-    }
+    }*/
 }
