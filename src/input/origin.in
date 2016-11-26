@@ -1,63 +1,70 @@
 class BinaryTree{
     public static void main(String[] a){
     System.out.println(new BT().Start());
-	
+    
     }
-	String String;
-	int return;
-    int f;	
-	f = 3;
+    String String;
+    int return;
+    int f;    
+    f = 3;
 }
  class Tree{
     Tree left ;
     Tree right;
-	Tree tmp;
+    Tree tmp;
     int key ;
-	int 8989key;
-	int Tree;
-	
-	String String;
-	boolean public;
-	Tree extends;
-	Tree static
-	int f;
-	int zxl;
-	boolean b;
-	
+    int 8989key;
+    int Tree;
+    int[] juruo;
+    int g;
+    String String;
+    boolean public;
+    Tree extends;
+    Tree static
+    int f;
+    int zxl;
+    boolean b;
+    
     boolean has_left ;
     boolean has_right ;
-	
+    
     Tree my_null ;
 
+    public int calc(int zxl)
+    {
+        int cyc;
+    return false;
+    }
+    
     // Initialize a node with a key value and no children
     public boolean Init(int v_key){
     key = v_key ;
-	key = "fs";
-	f = new int [3 + b];	
-	b = 3;
+    key = "fs";
+    f = new int [3 + b];    
+    b = 3;
     has_left = false ;
     has_right = false ;
-	tmp = new F();
+    tmp = new F();
     return true ;
     }
 
     // Update the right child with rn
     public boolean SetRight(Tree rn){
-	if (!f)
-	{
-	    b = true;
-	}
-	else 
-	{   
-	   if ((!f))
-	   {
-	       has_right = false;
-	   }
-	   else
-	   {
-	       right = rn ;      
-	   }	   
-	}
+    if (!f)
+    {
+        b = true;
+    }
+    else 
+    {   
+       if ((!f))
+       {
+           has_right = false;
+       }
+       else
+       {
+           right = rn ;      
+       }       
+    }
     return true ;
     }
     
@@ -67,6 +74,12 @@ class BinaryTree{
     return true ;
     }
 
+    public boolean SetLeft()
+    {
+    hh = 1;
+    return false;
+    }
+    
     public Tree GetRight(){
     return right ;
     }
@@ -89,14 +102,15 @@ class BinaryTree{
     }
 
     public boolean GetHas_Left(){
-	if (zxl) 
-	{	    
-	    key = 5;
-	}
-	else
-	{
-		f = 4;
-	}
+    if (zxl) 
+    {        
+        g[3] = 4;
+        key = 5;
+    }
+    else
+    {
+    f = 4;
+    }
     return 3;
     }
 
@@ -107,6 +121,8 @@ class BinaryTree{
 
     public boolean SetHas_Right(boolean val){
      has_right = val ;
+     f = juruo[screw];
+     f = xiaolongbao[it];
      return true ;
     }
     
@@ -116,12 +132,16 @@ class BinaryTree{
     public boolean Compare(int num1 , int num2){
     boolean ntb ;
     int nti ;
-
+    int haha ;
     ntb = false ;
     nti = num2 + 1 ;
-    if (num1 < num2) ntb = false ;
+    haha = 3;
+    haha = naive.makebignews();
+    nti = haha.length;
+    if (num1 < num2 && 3) ntb = false ;
     else if (!(num1 < nti)) ntb = false ;
-    else ntb = true ;
+    else if (4 * ntb < 233) ntb = true ;
+    else if (3 + right < 1999) ntb = false;
     return ntb ;
     }
 
@@ -136,7 +156,7 @@ class BinaryTree{
 
     new_node = new Tree();
     ntb = new_node.Init(v_key) ;
-	ntb = new_node.Init(v_key, 3);
+    ntb = new_node.Init(v_key, 3);
     current_node = this ;
     cont = true ;
     while (cont){
@@ -165,7 +185,7 @@ class BinaryTree{
 
 
 
-	// Copy the child key to the parent until a leaf is
+    // Copy the child key to the parent until a leaf is
     // found and remove the leaf. This is done with the
     // right subtree
     public boolean RemoveRight(Tree p_node, Tree c_node){
@@ -204,31 +224,34 @@ class BinaryTree{
     return true ;
     }
 
-	
+    
 
     // Check if the element to be removed will use the
     // righ or left subtree if one exists
     public boolean Remove(Tree p_node, Tree c_node){
     boolean ntb ;
-	boolean t_remove;
+    boolean t_remove;
     int auxkey1 ;
     int auxkey2 ;
     T ff;
-	Tree t_tree;
+    Tree t_tree;
     if (c_node.GetHas_Left()) 
         ntb = this.RemoveLeft(p_node,c_node) ;
     else 
         if (c_node.GetHas_Right())
-        ntb = this.RemoveRight(p_node,c_node) ;		
+    {
+    ntb = this.RemoveRight(p_node,c_node) ;    
+    ntb = this.RemoveRight(p_node, 3);
+    }        
         else {
-		ntb = ff.Remove(p_node);
-		t_remove = t_tree.Remove_rewrite(p_node);
-		t_remove = t_tree.Remove(p_node);
+    ntb = ff.Remove(p_node);
+    t_remove = t_tree.Remove_rewrite(p_node);
+    t_remove = t_tree.Remove(p_node);
         auxkey1 = c_node.GetKey();
         //auxtree01 = p_node.GetLeft() ;
         //auxkey2 = auxtree01.GetKey() ;
         auxkey2 = (p_node.GetLeft()).GetKey() ;
-		
+    
         if (this.Compare(auxkey1,auxkey2)) {
             ntb = p_node.SetLeft(my_null);
             ntb = p_node.SetHas_Left(false);
@@ -242,7 +265,7 @@ class BinaryTree{
     }
 
 
-	    // Delete an element from the tree
+        // Delete an element from the tree
     public boolean Delete(int v_key){
     Tree current_node ;
     Tree parent_node ;
@@ -278,11 +301,11 @@ class BinaryTree{
                 (!current_node.GetHas_Left()) )
                 ntb = true ;
             else 
-			{
-				ntb = this.Remove(parent_node,current_node); 
-				ntb = this.Remove(parent_node);
-				ntb = this.Remove(parent_node, current_node, parent_node, 3);
-			}                
+        {
+        ntb = this.Remove(parent_node,current_node); 
+        ntb = this.Remove(parent_node);
+        ntb = this.Remove(parent_node, current_node, parent_node, 3);
+        }                
             else ntb = this.Remove(parent_node,current_node);
             found = true ;
             cont = false ;
@@ -322,7 +345,7 @@ class BinaryTree{
     return ifound ;
     }
 
-	    // Print the elements of the tree
+        // Print the elements of the tree
     public boolean RecPrint(Tree node){
     boolean ntb ;
 
@@ -332,7 +355,7 @@ class BinaryTree{
         ntb = this.RecPrint(node.GetLeft());
     } else ntb = true ;
     System.out.println(node.GetKey());
-	System.out.println(0ttt);
+    System.out.println(0ttt);
     if (node.GetHas_Right()){
         //auxtree01 = node.GetRight() ;
         //ntb = this.RecPrint(auxtree01);
@@ -340,7 +363,7 @@ class BinaryTree{
     } else ntb = true ;
     return true ;
     }
-	
+    
     // Invoke the method to really print the tree elements
     public boolean Print(){
     Tree current_node;
@@ -367,17 +390,17 @@ class BT {
     Tree root ;
     boolean ntb ;
     int nti ;
-	int a;
-	int b;
-	int c;
-	int d;
-	int e;
+    int a;
+    int b;
+    int c;
+    int d;
+    int e;
     int [] wqf;
-	Tree tree_orz;
-	Seg seg_orz;
-	int 是3;
-	
-	tree_orz = seg_orz;
+    Tree tree_orz;
+    Seg seg_orz;
+    int 是3;
+    
+    tree_orz = seg_orz;
     root = new Tree();
     ntb = root.Init(16);
     ntb = root.Print();
@@ -391,14 +414,14 @@ class BT {
     ntb = root.Insert(28) ;
     ntb = root.Insert(14) ;
     ntb = root.Print();
-	wqf = new int [( (a + b * 5) / 3)];
-	wqf[ntb] = "s";
-	wqf[((3+b)] = 1;
-	wqf[((((b+c * d / e)] = 2;
-	wqf[23 + (324 * d )))] = 43214;
-	wqf[3] = "fds";
-	wqf[2] = c;
-	
+    wqf = new int [( (a + b * 5) / 3)];
+    wqf[ntb] = "s";
+    wqf[((3+b)] = 1;
+    wqf[((((b+c * d / e)] = 2;
+    wqf[23 + (324 * d )))] = 43214;
+    wqf[3] = "fds";
+    wqf[2] = c;
+    
     System.out.println(root.Search(24));
     System.out.println(root.Search(12));
     System.out.println(root.Search(16));
@@ -413,7 +436,42 @@ class BT {
 
 }
 
+class wqf
+{
+   wqf_is_a_fool yes;
+   boolean wqf_ugly;
+   Tree wqf_ugly;
+   BT wqf_idiot;
+   Tree wqf_idiot;      
+   Tree wqf_needs_to_learn;
+   BT is_there_a_western_country_i_havent_been_to;
+   BT familiar_with_western_theories;
+   int shut_mouth_and_say_nothing;
+   Tree is_the_best;
+   
+   public Tree criticize_me(BT too_simple, BT too_young, BT sometimes_naive, Tree run_faster_than_anyone)
+   {
+       Tree you_need_to_learn;       
+       return you_need_to_learn;
+   }   
+   
+   public Init()
+   {
+       wqf_needs_to_learn = this.criticize_me(is_there_a_western_country_i_havent_been_to, familiar_with_western_theories, shut_mouth_and_say_nothing, is_the_best);
+   }
+}
+
+class jiang_ha_ha
+{
+
+   
+   
+}
+
 class f extends B
 {
 }
 
+class BT
+{
+}

@@ -22,20 +22,19 @@ public class wqfminiJavaCompilerFrontEnd
 
         ParseTree tree = parser.goal();
         ParseTreeWalker walker = new ParseTreeWalker();
-        PhaseCheck ref = new PhaseCheck();
-        walker.walk(ref, tree);    //Error Reporting and Recovering
+        PhaseCheck phase_check = new PhaseCheck();
+        walker.walk(phase_check, tree);    //Error Reporting and Recovering
 
         JFrame frame = new JFrame("Abstract Syntax Tree GUI(By Qingfu Wan)");
         JPanel panel = new JPanel();
-        TreeViewer viewr = new TreeViewer(Arrays.asList(
-                parser.getRuleNames()),tree);
-        viewr.setScale(1.0);//scale a little
-        panel.add(viewr);
+        TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()),tree);
+        viewer.setScale(1.0);//scale a little
+        panel.add(viewer);
 
         //Visualizing the Abstract Syntax Tree
         frame.add(panel);
+        frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1366,768);
-        frame.setVisible(true);
     }
 }

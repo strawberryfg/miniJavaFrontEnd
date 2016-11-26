@@ -14,8 +14,8 @@ public class basic
         CommonTokenStream tokens =
                 (CommonTokenStream) recognizer.getInputStream();
         String input = tokens.getTokenSource().getInputStream().toString();
-        int start = offendingToken.getStartIndex();
-        int stop = offendingToken.getStopIndex();
+        int start = offendingToken.getCharPositionInLine();
+        int stop = offendingToken.getStopIndex() - offendingToken.getStartIndex() + start;
         PrintContext(input, line, start, stop);
     }
 
@@ -73,14 +73,14 @@ public class basic
 
     public static void ReadTestString()
     {
-        String file_path = readFile("input/file_path.in");
+        String file_path = readFile("src/input/file_path.in");
         file_path = file_path.substring(0, file_path.length() - 1);
         test_string = readFile(file_path);
     }
 
     public static boolean bail()
     {
-        String bail_flag = readFile("input/bail_or_not.in");
+        String bail_flag = readFile("src/input/bail_or_not.in");
         bail_flag = bail_flag.substring(0, bail_flag.length() - 1);
         if (bail_flag.equals("true")) return true; else return false;
     }

@@ -128,7 +128,7 @@ public class PhaseCheck extends miniJavaBaseListener
             }
         }
         String var_name = ctx.start.getInputStream().toString().substring(identifier_start, identifier_stop + 1);
-        if (currentvarSet.get(var_name) != null || classSet.contains(var_name))   //maybe it's a predefined class
+        if (currentvarSet.get(var_name) != null || classSet.contains(var_name) || classInstanceSet.containsKey(var_name))   //maybe it's a predefined class
         {
             basic.PrintError(ctx.getStart(), " The variable " + var_name + " already exists right now! ");
             basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
@@ -191,7 +191,7 @@ public class PhaseCheck extends miniJavaBaseListener
 
     public void exitMethod(miniJavaParser.MethodContext ctx)  //will step out of the method
     {
-        for (int i = 0; i < ctx.identifier().size(); i++)
+        for (int i = 1; i < ctx.identifier().size(); i++)
         {
             int identifier_start = ctx.identifier(i).start.getStartIndex();
             int identifier_stop = ctx.identifier(i).start.getStopIndex();
@@ -380,7 +380,7 @@ public class PhaseCheck extends miniJavaBaseListener
         Type and_type_1 =typeprop.get(ctx.expression(1));
         if (and_type_0 != Type.jBool || and_type_1 != Type.jBool)
         {
-            basic.PrintError(ctx.getStart(), " Requires Boolean and Boolean ( && operation ) but got" + and_type_0 + " and " + and_type_1);
+            basic.PrintError(ctx.getStart(), " Requires Boolean and Boolean ( && operation ) but got " + and_type_0 + " and " + and_type_1);
             basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
             typeprop.put(ctx, Type.jVoid);
         }
@@ -450,7 +450,7 @@ public class PhaseCheck extends miniJavaBaseListener
         }
         if (var_type != Type.jArray)
         {
-            basic.PrintError(ctx.getStart(), " Requires it to be an array but got" + var_type);
+            basic.PrintError(ctx.getStart(), " Requires it to be an array but got " + var_type);
             basic.PrintContext(ctx.start.getInputStream().toString(), ctx.start.getLine(), ctx.start.getStartIndex(), ctx.start.getStopIndex());
             typeprop.put(ctx, Type.jVoid);
         }
