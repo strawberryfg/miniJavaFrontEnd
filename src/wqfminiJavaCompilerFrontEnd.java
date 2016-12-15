@@ -6,13 +6,13 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.gui.TreeViewer;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
-
+import org.antlr.v4.runtime.CharStream;
 public class wqfminiJavaCompilerFrontEnd
 {
     public static void main(String[] args) throws Exception
     {
         basic.ReadTestString();
-        CharStream stream = new ANTLRInputStream(basic.test_string);
+        org.antlr.v4.runtime.CharStream stream = new ANTLRInputStream(basic.test_string);
         miniJavaLexer lexer  = new miniJavaLexer(stream);
         TokenStream tokenStream = new CommonTokenStream(lexer);
         miniJavaParser parser = new miniJavaParser(tokenStream);

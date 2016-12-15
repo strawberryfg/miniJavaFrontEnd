@@ -20,7 +20,7 @@ class BinaryTree{
     String String;
     boolean public;
     Tree extends;
-    Tree static
+    Tree static;
     int f;
     int zxl;
     boolean b;
